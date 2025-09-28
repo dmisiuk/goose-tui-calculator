@@ -15,42 +15,42 @@ Sleep 2000ms
 
 # Navigate to '2'
 Type "{{down}}"
-Sleep 150ms
-Type "{{down}}"
-Sleep 150ms
-Type "{{down}}"
-Sleep 150ms
-Type "{{right}}"
-Sleep 150ms
-Type " "
 Sleep 400ms
+Type "{{down}}"
+Sleep 400ms
+Type "{{down}}"
+Sleep 400ms
+Type "{{right}}"
+Sleep 400ms
+Type " "
+Sleep 1500ms
 
 # Navigate to '+'
 Type "{{right}}"
-Sleep 150ms
-Type "{{right}}"
-Sleep 150ms
-Type "{{right}}"
-Sleep 150ms
-Type " "
 Sleep 400ms
+Type "{{right}}"
+Sleep 400ms
+Type "{{right}}"
+Sleep 400ms
+Type " "
+Sleep 1500ms
 
 # Navigate to '3'
 Type "{{left}}"
-Sleep 150ms
-Type "{{left}}"
-Sleep 150ms
-Type " "
 Sleep 400ms
+Type "{{left}}"
+Sleep 400ms
+Type " "
+Sleep 1500ms
 
 # Navigate to '='
 Type "{{right}}"
-Sleep 150ms
-Type "{{right}}"
-Sleep 150ms
-Type " "
 Sleep 400ms
+Type "{{right}}"
+Sleep 400ms
+Type " "
+Sleep 1500ms
 
 # Quit application
 Type "q"
-Sleep 600ms
+Sleep 1000ms
