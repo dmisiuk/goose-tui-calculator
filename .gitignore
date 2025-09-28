@@ -18,5 +18,5 @@ bin/
 .DS_Store
 
 # Ignore binary calc and calculator
-calc
-calculator
+./calc
+./calculator
