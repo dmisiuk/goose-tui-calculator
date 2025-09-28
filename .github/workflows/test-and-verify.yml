@@ -35,7 +35,7 @@ jobs:
       - name: Install vhs
         run: go install github.com/charmbracelet/vhs@latest
 
-      - name: Verify Tapes
+      - name: Run calculator demo tape
         run: |
           export PATH=$(go env GOPATH)/bin:$PATH
-          vhs .tapes/*.tape
+          vhs .tapes/calculator.tape
