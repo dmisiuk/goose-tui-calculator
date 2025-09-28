@@ -8,13 +8,39 @@ Demos are **first-class artifacts**. A pull request should let a reviewer *see* 
 ## Lifecycle of a Change
 1. Ideation → create Issue.
 2. Discussion / refinement (acceptance criteria, demo expectations).
-3. Branch created.
-4. Implementation with tests.
-5. Demo script updated or created (VHS).
-6. GIF(s) regenerated.
-7. PR opened with Before / After visual evidence.
-8. Review / refine.
-9. Merge (squash) → optional tag → release automation.
+3. **Branch created** (`feature/<short-name>`, `bugfix/<short-name>`).
+4. **Implementation with tests**.
+5. **Demo script updated or created** (VHS).
+6. **GIF(s) regenerated**.
+7. **Documentation updated** (README.md, demo-history.md).
+8. **PR opened** with Before / After visual evidence.
+9. Review / refine.
+10. Merge (squash) → optional tag → release automation.
+
+## Feature Development Checklist
+
+When working on a new feature, ensure all of the following are completed:
+
+### 🔄 **Git Workflow**
+- [ ] Create feature branch from main: `git checkout -b feature/<short-name>`
+- [ ] Verify `.gitignore` excludes binary files (`calc`, `calculator`, etc.)
+- [ ] Remove any accidentally committed binaries: `rm -f calc && git status`
+- [ ] Commit changes with descriptive messages following conventional commits
+- [ ] Push feature branch: `git push -u origin feature/<branch-name>`
+
+### 💻 **Implementation**
+- [ ] Implement feature following existing code patterns and conventions
+- [ ] Add necessary imports and dependencies
+- [ ] Handle errors appropriately
+- [ ] Maintain thread-safe state management
+- [ ] Ensure backward compatibility (no breaking changes)
+
+### 🧪 **Testing Requirements**
+- [ ] **Unit tests pass**: `go test ./...`
+- [ ] **Build verification**: `go build -o calc ./cmd/calculator`
+- [ ] **Integration testing**: Manual verification of all interaction methods
+- [ ] **Edge case testing**: Test error conditions and boundary cases
+- [ ] **Regression testing**: Verify existing functionality still works
 
 ## Visual Demo Design Guidelines
 - Keep tapes short (< 15 seconds runtime) unless necessary.

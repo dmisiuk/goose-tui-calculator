@@ -8,15 +8,17 @@ A retro-styled terminal user interface calculator built with Go and Bubble Tea.
 
 ## Features
 
-### Visual Feedback
-Enhanced user experience with visual feedback for button navigation and press states:
+### Enhanced Visual Feedback
+Advanced visual feedback system that distinguishes between different input methods:
 
-![Visual Feedback Demo](.tapes/assets/feature-visual-feedback.gif)
+![Enhanced Visual Feedback Demo](.tapes/assets/feature-enhanced-visual-feedback.gif)
 
-- **Button highlighting** - Gold background when navigating with arrow keys
-- **Pressed state feedback** - Orange-red background when activating buttons with Enter/Space
-- **Complete keyboard navigation** - Perform calculations using only arrow keys and Enter
-- **Accessible design** - Clear visual indicators for current focus and button activation
+- **Navigation highlighting** - Gold background when navigating with arrow keys
+- **Navigation activation** - Orange-red background when pressing Enter/Space or clicking
+- **Direct keyboard input** - Blue/purple background when typing numbers/operators directly
+- **Timed feedback** - Visual feedback automatically clears after 300ms
+- **Complete accessibility** - Clear visual distinction between all interaction methods
+- **Multi-input support** - Seamless switching between navigation and direct input
 
 ## Project Requirements
 

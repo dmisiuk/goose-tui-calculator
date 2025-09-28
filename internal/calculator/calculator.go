@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
@@ -42,29 +43,49 @@ var (
 	equalsStyle       = buttonStyle.Copy().Background(equalsColor)
 
 	// Highlight and pressed button styles
-	highlightBackground = lipgloss.Color("#FFD700") // Gold color for highlight
-	pressedBackground   = lipgloss.Color("#FF4500") // OrangeRed for pressed
+	highlightBackground      = lipgloss.Color("#FFD700") // Gold color for highlight
+	pressedBackground        = lipgloss.Color("#FF4500") // OrangeRed for pressed
+	directKeyboardBackground = lipgloss.Color("#6A5ACD") // SlateBlue for direct keyboard input
 
-	highlightStyle = buttonStyle.Copy().Background(highlightBackground).Foreground(lipgloss.Color("#000000"))
-	pressedStyle   = buttonStyle.Copy().Background(pressedBackground).Foreground(lipgloss.Color("#FFFFFF"))
+	highlightStyle      = buttonStyle.Copy().Background(highlightBackground).Foreground(lipgloss.Color("#000000"))
+	pressedStyle        = buttonStyle.Copy().Background(pressedBackground).Foreground(lipgloss.Color("#FFFFFF"))
+	directKeyboardStyle = buttonStyle.Copy().Background(directKeyboardBackground).Foreground(lipgloss.Color("#FFFFFF"))
+)
+
+type tickMsg time.Time
+
+func tick() tea.Cmd {
+	return tea.Tick(time.Millisecond*300, func(t time.Time) tea.Msg {
+		return tickMsg(t)
+	})
+}
+
+type activationMethod int
+
+const (
+	activationNone activationMethod = iota
+	activationNavigation
+	activationDirectKeyboard
 )
 
 type model struct {
-	display      string
-	buttons      [][]string
-	cursorX      int
-	cursorY      int
-	operator     string
-	operand1     string
-	isOperand2   bool
-	lastButton   string
-	isError      bool
-	keys         keyMap
-	mouseEvent   tea.MouseMsg
-	isQuitting   bool
-	lastOperator string
-	pressedX     int
-	pressedY     int
+	display             string
+	buttons             [][]string
+	cursorX             int
+	cursorY             int
+	operator            string
+	operand1            string
+	isOperand2          bool
+	lastButton          string
+	isError             bool
+	keys                keyMap
+	mouseEvent          tea.MouseMsg
+	isQuitting          bool
+	lastOperator        string
+	pressedX            int
+	pressedY            int
+	activationMethod    activationMethod
+	activationStartTime time.Time
 }
 
 type keyMap struct {
@@ -105,21 +126,34 @@ func (m model) Init() tea.Cmd { return nil }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tickMsg:
+		// Clear activation visual feedback after timing expires
+		if m.activationMethod != activationNone && time.Since(m.activationStartTime) > time.Millisecond*300 {
+			m.activationMethod = activationNone
+			m.pressedX = -1
+			m.pressedY = -1
+		}
+		return m, tick()
 	case tea.KeyMsg:
 		// Direct mapped keys (digits/operators/etc.) first
 		if btn, ok := mapKeyToButton(msg.String()); ok {
-			// Set pressed position on Enter key
-			if key.Matches(msg, m.keys.Enter) {
-				for y, row := range m.buttons {
-					for x, val := range row {
-						if val == btn {
-							m.pressedX = x
-							m.pressedY = y
-						}
+			// Find button position for visual feedback
+			for y, row := range m.buttons {
+				for x, val := range row {
+					if val == btn {
+						m.pressedX = x
+						m.pressedY = y
+						m.activationMethod = activationDirectKeyboard
+						m.activationStartTime = time.Now()
+						break
 					}
 				}
 			}
-			return m.handleButtonPress(btn)
+			updatedModel, cmd := m.handleButtonPress(btn)
+			if updated, ok := updatedModel.(model); ok {
+				return updated, tea.Batch(cmd, tick())
+			}
+			return updatedModel, tea.Batch(cmd, tick())
 		}
 		switch {
 		case key.Matches(msg, m.keys.Quit), key.Matches(msg, m.keys.Esc):
@@ -140,25 +174,39 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 		case key.Matches(msg, m.keys.Left):
-			if m.cursorX > 0 { m.cursorX-- }
+			if m.cursorX > 0 {
+				m.cursorX--
+			}
 		case key.Matches(msg, m.keys.Right):
-			if m.cursorX < len(m.buttons[m.cursorY])-1 { m.cursorX++ }
+			if m.cursorX < len(m.buttons[m.cursorY])-1 {
+				m.cursorX++
+			}
 		case key.Matches(msg, m.keys.Enter):
 			button := m.buttons[m.cursorY][m.cursorX]
+			m.pressedX = m.cursorX
+			m.pressedY = m.cursorY
+			m.activationMethod = activationNavigation
+			m.activationStartTime = time.Now()
 			updatedModel, cmd := m.handleButtonPress(button)
 			if updated, ok := updatedModel.(model); ok {
-				updated.pressedX = -1
-				updated.pressedY = -1
-				return updated, cmd
+				return updated, tea.Batch(cmd, tick())
 			}
-			return updatedModel, cmd
+			return updatedModel, tea.Batch(cmd, tick())
 		}
 	case tea.MouseMsg:
 		if msg.Type == tea.MouseLeft {
 			for y, row := range m.buttons {
 				for x, val := range row {
 					if msg.Y == y+2 && msg.X >= x*6 && msg.X < x*6+5 {
-						return m.handleButtonPress(val)
+						m.pressedX = x
+						m.pressedY = y
+						m.activationMethod = activationNavigation // Mouse clicks use navigation style
+						m.activationStartTime = time.Now()
+						updatedModel, cmd := m.handleButtonPress(val)
+						if updated, ok := updatedModel.(model); ok {
+							return updated, tea.Batch(cmd, tick())
+						}
+						return updatedModel, tea.Batch(cmd, tick())
 					}
 				}
 			}
@@ -178,7 +226,6 @@ func (m model) Display() string {
 	return m.display
 }
 
-
 func (m model) handleButtonPress(button string) (tea.Model, tea.Cmd) {
 	m.lastButton = button
 	m.isError = false
@@ -192,7 +239,9 @@ func (m model) handleButtonPress(button string) (tea.Model, tea.Cmd) {
 			m.display += button
 		}
 	case button == ".":
-		if !strings.Contains(m.display, ".") { m.display += "." }
+		if !strings.Contains(m.display, ".") {
+			m.display += "."
+		}
 	case isOperator(button):
 		m.operand1 = m.display
 		m.operator = button
@@ -204,7 +253,11 @@ func (m model) handleButtonPress(button string) (tea.Model, tea.Cmd) {
 		m.isOperand2 = false
 	case button == "+/-":
 		if m.display != "0" {
-			if strings.HasPrefix(m.display, "-") { m.display = strings.TrimPrefix(m.display, "-") } else { m.display = "-" + m.display }
+			if strings.HasPrefix(m.display, "-") {
+				m.display = strings.TrimPrefix(m.display, "-")
+			} else {
+				m.display = "-" + m.display
+			}
 		}
 	case button == "%":
 		val, _ := strconv.ParseFloat(m.display, 64)
@@ -214,17 +267,30 @@ func (m model) handleButtonPress(button string) (tea.Model, tea.Cmd) {
 			operand2 := m.display
 			val1, err1 := strconv.ParseFloat(m.operand1, 64)
 			val2, err2 := strconv.ParseFloat(operand2, 64)
-			if err1 != nil || err2 != nil { m.display = "Error"; m.isError = true; break }
+			if err1 != nil || err2 != nil {
+				m.display = "Error"
+				m.isError = true
+				break
+			}
 			var result float64
 			switch m.operator {
-			case "+": result = val1 + val2
-			case "-": result = val1 - val2
-			case "x": result = val1 * val2
+			case "+":
+				result = val1 + val2
+			case "-":
+				result = val1 - val2
+			case "x":
+				result = val1 * val2
 			case "/":
-				if val2 == 0 { m.display = "Error"; m.isError = true; break }
+				if val2 == 0 {
+					m.display = "Error"
+					m.isError = true
+					break
+				}
 				result = val1 / val2
 			}
-			if !m.isError { m.display = fmt.Sprintf("%g", result) }
+			if !m.isError {
+				m.display = fmt.Sprintf("%g", result)
+			}
 			m.operand1 = ""
 			m.operator = ""
 			m.isOperand2 = true
@@ -241,21 +307,32 @@ func isOperator(s string) bool { return s == "+" || s == "-" || s == "x" || s ==
 // mapKeyToButton allows direct keyboard entry of calculator buttons without navigation.
 // Supports: digits, + - * / x . = c (AC), %, and ~ as sign toggle.
 func mapKeyToButton(k string) (string, bool) {
-	if isNumber(k) { return k, true }
+	if isNumber(k) {
+		return k, true
+	}
 	switch k {
-	case "+", "-", "/": return k, true
-	case "*", "x": return "x", true
-	case ".": return ".", true
-	case "=": return "=", true
-	case "c", "C": return "AC", true
-	case "%": return "%", true
-	case "~": return "+/-", true
+	case "+", "-", "/":
+		return k, true
+	case "*", "x":
+		return "x", true
+	case ".":
+		return ".", true
+	case "=":
+		return "=", true
+	case "c", "C":
+		return "AC", true
+	case "%":
+		return "%", true
+	case "~":
+		return "+/-", true
 	}
 	return "", false
 }
 
 func (m model) View() string {
-	if m.isQuitting { return "Thanks for using the Goose Calculator!\n" }
+	if m.isQuitting {
+		return "Thanks for using the Goose Calculator!\n"
+	}
 	var b strings.Builder
 	b.WriteString(displayStyle.Render(m.display))
 	b.WriteString("\n\n")
@@ -263,19 +340,32 @@ func (m model) View() string {
 		var rowStr []string
 		for x, val := range row {
 			style := buttonStyle
-			if isSpecialFunc(val) { style = specialFuncsStyle } else if isOperator(val) { style = operatorStyle } else if val == "=" { style = equalsStyle }
-			if m.cursorY == y && m.cursorX == x {
-				// pressed button style takes precedence
-				if m.pressedX == x && m.pressedY == y {
+			if isSpecialFunc(val) {
+				style = specialFuncsStyle
+			} else if isOperator(val) {
+				style = operatorStyle
+			} else if val == "=" {
+				style = equalsStyle
+			}
+			// Handle visual feedback based on activation method and cursor position
+			if m.pressedX == x && m.pressedY == y {
+				// Button is currently being pressed - use activation-specific style
+				switch m.activationMethod {
+				case activationDirectKeyboard:
+					style = directKeyboardStyle
+				case activationNavigation:
 					style = pressedStyle
-				} else {
-					style = highlightStyle
 				}
+			} else if m.cursorY == y && m.cursorX == x {
+				// Button is highlighted by cursor navigation
+				style = highlightStyle
 			}
 			if val == "0" {
 				style = style.Copy().Width(11)
 				rowStr = append(rowStr, style.Render(val))
-				if x+1 < len(row) { x++ }
+				if x+1 < len(row) {
+					x++
+				}
 			} else {
 				rowStr = append(rowStr, style.Render(val))
 			}
@@ -283,7 +373,7 @@ func (m model) View() string {
 		b.WriteString(lipgloss.JoinHorizontal(lipgloss.Left, rowStr...))
 		b.WriteString("\n")
 	}
-	b.WriteString("\nUse number/operator keys or arrow keys + Enter. Press q or esc to quit.\n")
+	b.WriteString("\nDirect input: Type numbers/operators (blue). Navigation: Arrow keys + Enter (orange). Press q or esc to quit.\n")
 	return b.String()
 }
 
