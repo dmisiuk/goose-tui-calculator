@@ -2,39 +2,43 @@ name: Test and Verify
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+      - develop
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
+      - develop
 
 jobs:
-  test:
+  test-and-verify:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.22'
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
 
-    - name: Install dependencies
-      run: go get .
+      - name: Install dependencies (ffmpeg, ttyd)
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg ttyd
 
-    - name: Test
-      run: go test -v ./...
+      # Build (replaces deprecated 'go get .')
+      - name: Build
+        run: go build ./...
 
-    - name: Vet
-      run: go vet ./...
+      - name: Run tests
+        run: go test -v ./...
 
-  verify-tapes:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.22'
-    - name: Install vhs
-      run: go install github.com/charmbracelet/vhs@latest
-    - name: Verify Tapes
-      run: vhs < .tapes/placeholder.tape
+      - name: Vet code
+        run: go vet ./...
+
+      - name: Install vhs
+        run: go install github.com/charmbracelet/vhs@latest
+
+      - name: Run calculator demo tape
+        run: |
+          export PATH=$(go env GOPATH)/bin:$PATH
+          vhs .tapes/calculator.tape

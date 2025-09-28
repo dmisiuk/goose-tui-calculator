@@ -1,6 +1,6 @@
-module github.com/user/goose-tui-calculator
+module github.com/dmisiuk/goose-tui-calculator
 
-go 1.25.1
+go 1.24.0
 
 require (
 	github.com/charmbracelet/bubbles v0.18.0
