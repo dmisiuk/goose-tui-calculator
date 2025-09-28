@@ -22,8 +22,9 @@ jobs:
         with:
           go-version: '1.22'
 
-      - name: Install dependencies
-        run: go get .
+      # Build (replaces deprecated 'go get .')
+      - name: Build
+        run: go build ./...
 
       - name: Run tests
         run: go test -v ./...
