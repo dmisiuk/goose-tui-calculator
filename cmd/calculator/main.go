@@ -5,7 +5,7 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/user/goose-tui-calculator/internal/calculator"
+	"github.com/dmisiuk/goose-tui-calculator/internal/calculator"
 )
 
 func main() {
