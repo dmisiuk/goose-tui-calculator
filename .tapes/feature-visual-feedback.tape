@@ -8,28 +8,42 @@ Type "go run ./cmd/calculator"
 Enter
 Sleep 2000ms
 
-# Navigate to show button highlighting
-Right
-Sleep 300ms
-Right
+# Complete calculation using only arrow keys and Enter/Space
+# Navigate to "7" button (row 1, col 0)
+Down
+Sleep 500ms
+Enter
+Sleep 500ms
+
+# Navigate to "+" button (row 3, col 3)
+Down
 Sleep 300ms
 Down
 Sleep 300ms
-Left
+Right
 Sleep 300ms
-
-# Show button press feedback
+Right
+Sleep 300ms
+Right
+Sleep 300ms
 Enter
-Sleep 400ms
-
-# Simple calculation with visual feedback
-Type "7"
-Sleep 300ms
-Type "+"
-Sleep 300ms
-Type "3"
-Sleep 300ms
-Type "="
 Sleep 500ms
 
+# Navigate to "3" button (row 2, col 2)
+Up
+Sleep 300ms
+Left
+Sleep 300ms
+Enter
+Sleep 500ms
+
+# Navigate to "=" button (row 4, col 2)
+Down
+Sleep 300ms
+Down
+Sleep 300ms
+Enter
+Sleep 800ms
+
+# Show result in display, then quit
 Type "q"
