@@ -1,11 +1,6 @@
 # Existing (new file created)
 # Allow tracking of demo assets explicitly (override below if any global patterns)
 
-# Ignore everything in .tapes/assets except committed baseline and future gifs
-.tapes/assets/*
-!.tapes/assets/calculator-basic.gif
-!.tapes/assets/calculator-alias.gif
-
 # Go build artifacts
 bin/
 *.exe
