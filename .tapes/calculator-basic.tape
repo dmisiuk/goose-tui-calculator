@@ -4,32 +4,35 @@ Set Width 1000
 Set Height 600
 
 # Pre-build binary for stability (cold compile can be slow on CI)
-Type "go build -o calc ./cmd/calculator\n"
+Type "go build -o calc ./cmd/calculator"
+Enter
 Sleep 1600ms
 
-# First run session
-Type "./calc\n"
-Sleep 450ms
+# First session: 2 + 3 = 5
+Type "./calc"
+Enter
+Sleep 2000ms
 Type "2"
-Sleep 120ms
+Sleep 300ms
 Type "+"
-Sleep 120ms
+Sleep 300ms
 Type "3"
-Sleep 120ms
+Sleep 300ms
 Type "="
-Sleep 500ms
+Sleep 800ms
 Type "q"
-Sleep 350ms
+Sleep 600ms
 
-# Second run session (fresh state)
-Type "./calc\n"
-Sleep 450ms
+# Second session: 9 x 4 = 36
+Type "./calc"
+Enter
+Sleep 2000ms
 Type "9"
-Sleep 120ms
+Sleep 300ms
 Type "x"
-Sleep 120ms
+Sleep 300ms
 Type "4"
-Sleep 120ms
+Sleep 300ms
 Type "="
-Sleep 500ms
+Sleep 800ms
 Type "q"
