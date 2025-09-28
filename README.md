@@ -4,6 +4,8 @@ A retro-styled terminal user interface calculator built with Go and Bubble Tea.
 
 *Work in progress.*
 
+![Baseline Demo](.tapes/assets/calculator-basic.gif)
+
 ## Project Requirements
 
 An initial requirements and scope document is maintained in [docs/requirements.md](docs/requirements.md). This captures:
@@ -29,3 +31,4 @@ If you want to propose a feature, open a *Feature Request* issue (template provi
 
 ---
 Visual demos are treated as versioned artifacts to keep reviews fast and transparent.
+See demo history: [docs/demo-history.md](docs/demo-history.md)
