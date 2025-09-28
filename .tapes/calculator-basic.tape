@@ -12,6 +12,17 @@ Type "3"
 Sleep 150ms
 Type "="
 Sleep 600ms
-Type "a" # press AC via navigation? currently AC not mapped to key 'a', consider future direct key mapping
+# Restart app to simulate clear (AC key not mapped yet)
+Type "q"
 Sleep 400ms
+Type "go run ./cmd/calculator\n"
+Sleep 700ms
+Type "9"
+Sleep 150ms
+Type "x"
+Sleep 150ms
+Type "4"
+Sleep 150ms
+Type "="
+Sleep 600ms
 Type "q"
