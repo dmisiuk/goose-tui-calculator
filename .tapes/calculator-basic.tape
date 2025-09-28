@@ -2,27 +2,34 @@ Output .tapes/assets/calculator-basic.gif
 Set FontSize 18
 Set Width 1000
 Set Height 600
-Type "go run ./cmd/calculator\n"
-Sleep 700ms
+
+# Pre-build binary for stability (cold compile can be slow on CI)
+Type "go build -o calc ./cmd/calculator\n"
+Sleep 1600ms
+
+# First run session
+Type "./calc\n"
+Sleep 450ms
 Type "2"
-Sleep 150ms
+Sleep 120ms
 Type "+"
-Sleep 150ms
+Sleep 120ms
 Type "3"
-Sleep 150ms
+Sleep 120ms
 Type "="
-Sleep 600ms
-# Restart app to simulate clear (AC key not mapped yet)
+Sleep 500ms
 Type "q"
-Sleep 400ms
-Type "go run ./cmd/calculator\n"
-Sleep 700ms
+Sleep 350ms
+
+# Second run session (fresh state)
+Type "./calc\n"
+Sleep 450ms
 Type "9"
-Sleep 150ms
+Sleep 120ms
 Type "x"
-Sleep 150ms
+Sleep 120ms
 Type "4"
-Sleep 150ms
+Sleep 120ms
 Type "="
-Sleep 600ms
+Sleep 500ms
 Type "q"
