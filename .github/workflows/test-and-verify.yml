@@ -1,0 +1,40 @@
+name: Test and Verify
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22'
+
+    - name: Install dependencies
+      run: go get .
+
+    - name: Test
+      run: go test -v ./...
+
+    - name: Vet
+      run: go vet ./...
+
+  verify-tapes:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22'
+    - name: Install vhs
+      run: go install github.com/charmbracelet/vhs@latest
+    - name: Verify Tapes
+      run: vhs < .tapes/placeholder.tape
