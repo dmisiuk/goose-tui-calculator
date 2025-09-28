@@ -20,3 +20,7 @@ bin/
 # Ignore binary calc and calculator
 ./calc
 ./calculator
+
+# Allow committed demo gifs
+!.tapes/assets/*.gif
+
