@@ -83,6 +83,11 @@ func New() model {
         display: "0",
         buttons: [][]string{
             {"AC", "+/-", "%", "/"},
+// TODO: Improve mouse event hit detection to consider actual button positions, spacing, and padding
+// TODO: Add mouse hover state tracking and feedback
+// TODO: Add config flag to enable/disable mouse support
+// For now, just a placeholder for enhanced mouse support logic
+
             {"7", "8", "9", "x"},
             {"4", "5", "6", "-"},
             {"1", "2", "3", "+"},
@@ -129,9 +134,20 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         }
     case tea.MouseMsg:
         if msg.Type == tea.MouseLeft {
+            // Improved mouse hit detection considering button width, padding and margins
+            btnWidth := buttonStyle.GetWidth() + 1   // Adding 1 for margin or padding
+            btnHeight := buttonStyle.GetHeight() + 1 // Adding 1 for margin or padding
+            baseY := 2 // The display takes 1 line plus 1 blank line after it
+
             for y, row := range m.buttons {
                 for x, val := range row {
-                    if msg.Y == y+2 && msg.X >= x*6 && msg.X < x*6+5 {
+                    // Calculate button boundaries
+                    btnXStart := x * btnWidth
+                    btnXEnd := btnXStart + btnWidth - 1
+                    btnYStart := baseY + y*btnHeight
+                    btnYEnd := btnYStart + btnHeight - 1
+
+                    if msg.Y >= btnYStart && msg.Y <= btnYEnd && msg.X >= btnXStart && msg.X <= btnXEnd {
                         return m.handleButtonPress(val)
                     }
                 }
