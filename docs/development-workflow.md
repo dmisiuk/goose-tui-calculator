@@ -6,14 +6,14 @@ This document expands on the high‑level process in `CONTRIBUTING.md`.
 Demos are **first-class artifacts**. A pull request should let a reviewer *see* the change without pulling code locally.
 
 ## Lifecycle of a Change
-1. Ideation → create Issue.
+1. **Ideation → create Issue** with clear problem description and acceptance criteria.
 2. Discussion / refinement (acceptance criteria, demo expectations).
 3. **Branch created** (`feature/<short-name>`, `bugfix/<short-name>`).
 4. **Implementation with tests**.
 5. **Demo script updated or created** (VHS).
 6. **GIF(s) regenerated**.
 7. **Documentation updated** (README.md, demo-history.md).
-8. **PR opened** with Before / After visual evidence.
+8. **PR opened** with Before / After visual evidence and reference to Issue.
 9. Review / refine.
 10. Merge (squash) → optional tag → release automation.
 
@@ -22,6 +22,7 @@ Demos are **first-class artifacts**. A pull request should let a reviewer *see* 
 When working on a new feature, ensure all of the following are completed:
 
 ### 🔄 **Git Workflow**
+- [ ] **Create GitHub Issue** describing the problem, proposed solution, and acceptance criteria
 - [ ] Create feature branch from main: `git checkout -b feature/<short-name>`
 - [ ] Verify `.gitignore` excludes binary files (`calc`, `calculator`, etc.)
 - [ ] Remove any accidentally committed binaries: `rm -f calc && git status`
@@ -54,6 +55,7 @@ When working on a new feature, ensure all of the following are completed:
 - [ ] **Visual alignment verified**: No extra spacing or misalignment
 - [ ] **GitHub URLs working**: Test that PR images display correctly
 - [ ] **Branch up to date**: Push all commits including visual fixes
+- [ ] **Issue reference ready**: Include "Fixes #<issue-number>" in PR description
 
 ## Visual Demo Design Guidelines
 - Keep tapes short (< 15 seconds runtime) unless necessary.
