@@ -19,16 +19,23 @@ var (
 	operators    = lipgloss.Color("#F9AB00") // An orange for operators
 	equalsColor  = lipgloss.Color("#81C995") // A greenish color for equals
 	textColor    = lipgloss.Color("#FFFFFF") // White text
+	altTextColor = lipgloss.Color("#9E9E9E") // A dimmer white text
 
 	// Styles
+	containerStyle = lipgloss.NewStyle().
+		Background(displayColor).
+		Width(23).
+		Height(2).
+		Padding(1, 2)
+
 	displayStyle = lipgloss.NewStyle().
 			Bold(true).
 			Foreground(textColor).
-			Background(displayColor).
-			Width(23). // 4 buttons * 5 width + 3 spaces
-			Height(1).
-			Padding(1, 2).
 			Align(lipgloss.Right)
+
+	previousDisplayStyle = lipgloss.NewStyle().
+				Foreground(altTextColor).
+				Align(lipgloss.Right)
 
 	buttonStyle = lipgloss.NewStyle().
 			Bold(true).
@@ -70,6 +77,7 @@ const (
 
 type model struct {
 	display             string
+	previousDisplay     string
 	buttons             [][]string
 	cursorX             int
 	cursorY             int
@@ -111,6 +119,7 @@ var defaultKeyMap = keyMap{
 func New() model {
 	return model{
 		display: "0",
+		previousDisplay:     "",
 		buttons: [][]string{
 			{"AC", "+/-", "%", "/"},
 			{"7", "8", "9", "x"},
@@ -248,6 +257,7 @@ func (m model) handleButtonPress(button string) (tea.Model, tea.Cmd) {
 		m.isOperand2 = true
 	case button == "AC":
 		m.display = "0"
+		m.previousDisplay = ""
 		m.operand1 = ""
 		m.operator = ""
 		m.isOperand2 = false
@@ -289,6 +299,7 @@ func (m model) handleButtonPress(button string) (tea.Model, tea.Cmd) {
 				result = val1 / val2
 			}
 			if !m.isError {
+				m.previousDisplay = fmt.Sprintf("%s %s %s = %g", m.operand1, m.operator, operand2, result)
 				m.display = fmt.Sprintf("%g", result)
 			}
 			m.operand1 = ""
@@ -334,7 +345,13 @@ func (m model) View() string {
 		return "Thanks for using the Goose Calculator!\n"
 	}
 	var b strings.Builder
-	b.WriteString(displayStyle.Render(m.display))
+
+	// Render previous and current display
+	previousDisplayStr := previousDisplayStyle.Render(m.previousDisplay)
+	displayStr := displayStyle.Render(m.display)
+	combinedDisplay := lipgloss.JoinVertical(lipgloss.Right, previousDisplayStr, displayStr)
+	b.WriteString(containerStyle.Render(combinedDisplay))
+
 	b.WriteString("\n\n")
 	for y, row := range m.buttons {
 		var rowStr []string
