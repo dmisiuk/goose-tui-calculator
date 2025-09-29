@@ -21,6 +21,8 @@ var (
 	numberButtonColor  = lipgloss.Color("#5D6D7E") // Gray numbers
 	operatorColor      = lipgloss.Color("#D68910") // Orange operators
 	functionalKeyColor = lipgloss.Color("#7F8C8D") // Light gray functional keys (+/-, %, .)
+	zeroButtonColor    = lipgloss.Color("#34495E") // Darker blue-gray for 0
+	equalsButtonColor  = lipgloss.Color("#E67E22") // Bright orange for equals
 
 	buttonTextColor = lipgloss.Color("#FFFFFF") // White text
 	logoTextColor   = lipgloss.Color("#FFFFFF") // White logo
@@ -57,6 +59,8 @@ var (
 	acButtonStyle         = baseButtonStyle.Copy().Background(acButtonColor)
 	operatorButtonStyle   = baseButtonStyle.Copy().Background(operatorColor)
 	functionalButtonStyle = baseButtonStyle.Copy().Background(functionalKeyColor)
+	zeroButtonStyle       = baseButtonStyle.Copy().Background(zeroButtonColor)
+	equalsButtonStyle     = baseButtonStyle.Copy().Background(equalsButtonColor)
 
 	// Visual feedback
 	highlightBackground      = lipgloss.Color("#FFD700")
@@ -391,10 +395,14 @@ func (m model) View() string {
 
 			if val == "AC" {
 				style = acButtonStyle
-			} else if isOperator(val) || val == "=" {
+			} else if val == "=" {
+				style = equalsButtonStyle
+			} else if isOperator(val) {
 				style = operatorButtonStyle
 			} else if val == "+/-" || val == "%" || val == "." {
 				style = functionalButtonStyle
+			} else if val == "0" {
+				style = zeroButtonStyle
 			} else {
 				style = numberButtonStyle
 			}
@@ -428,7 +436,7 @@ func (m model) View() string {
 		Foreground(lipgloss.Color("#95A5A6")).
 		Width(24).
 		Align(lipgloss.Center).
-		Render("Direct input: Type numbers/operators (blue).\nNavigation: Arrow keys + Enter (orange).\nPress q or esc to quit.")
+		Render("Press q or esc to quit")
 	b.WriteString(helpText)
 
 	return calculatorBodyStyle.Render(b.String())
