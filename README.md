@@ -4,9 +4,19 @@ A retro-styled terminal user interface calculator built with Go and Bubble Tea.
 
 *Work in progress.*
 
-![Baseline Demo](.tapes/assets/calculator-basic.gif)
+![Baseline Demo](.tapes/assets/feature-previous-operation.gif)
 
 ## Features
+
+### Previous Operation Display
+The calculator shows your previous operation on a second line above the current input:
+
+![Previous Operation Demo](.tapes/assets/feature-previous-operation.gif)
+
+- **Operation tracking** - See "2 +" while entering the second operand
+- **Full history** - View complete calculation "2 + 3 = 5" after pressing equals
+- **Right alignment** - Both history and current values align to the right
+- **Clear integration** - AC button clears both lines for fresh start
 
 ### Enhanced Visual Feedback
 Advanced visual feedback system that distinguishes between different input methods:
