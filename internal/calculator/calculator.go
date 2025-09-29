@@ -144,7 +144,7 @@ func New() model {
 			{"7", "8", "9", "x"},
 			{"4", "5", "6", "-"},
 			{"1", "2", "3", "+"},
-			{"0", ".", "="},
+			{"0", ".", "HONK", "="},
 		},
 		keys: defaultKeyMap,
 	}
@@ -296,6 +296,8 @@ func (m model) handleButtonPress(button string) (tea.Model, tea.Cmd) {
 		val, _ := strconv.ParseFloat(m.display, 64)
 		m.display = fmt.Sprintf("%g", val/100)
 	case button == "=":
+		fallthrough
+	case button == "HONK":
 		if m.operand1 != "" && m.operator != "" {
 			operand2 := m.display
 			val1, err1 := strconv.ParseFloat(m.operand1, 64)
@@ -357,6 +359,8 @@ func mapKeyToButton(k string) (string, bool) {
 		return "%", true
 	case "~":
 		return "+/-", true
+	case "H":
+		return "HONK", true
 	}
 	return "", false
 }
@@ -369,7 +373,7 @@ func (m model) View() string {
 	var b strings.Builder
 
 	// Logo - match button grid width (4 buttons × 6 chars = 24)
-	b.WriteString(logoStyle.Width(24).Render("🪿 GOOSE 🪿"))
+	b.WriteString(logoStyle.Width(24).Render("🪿  GOOSE CALC  🪿"))
 	b.WriteString("\n\n")
 
 	// Display - width matches 4 buttons at 6 chars each = 24
@@ -395,7 +399,7 @@ func (m model) View() string {
 
 			if val == "AC" {
 				style = acButtonStyle
-			} else if val == "=" {
+			} else if val == "=" || val == "HONK" {
 				style = equalsButtonStyle
 			} else if isOperator(val) {
 				style = operatorButtonStyle
@@ -420,9 +424,7 @@ func (m model) View() string {
 			}
 
 			// Wide 0 button - spans 2 button positions (6 + 6 = 12)
-			if val == "0" {
-				style = style.Copy().Width(12)
-			}
+			// No special width when we have 4 columns consistently
 
 			rowButtons = append(rowButtons, style.Render(val))
 		}
