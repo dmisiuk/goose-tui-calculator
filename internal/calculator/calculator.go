@@ -413,7 +413,7 @@ func (m model) View() string {
 		b.WriteString(lipgloss.JoinHorizontal(lipgloss.Left, rowStr...))
 		b.WriteString("\n")
 	}
-	b.WriteString("\nType numbers/operators or use arrows. Press q to quit.")
+	b.WriteString("\nType numbers/operators or use arrows + space/enter. Press q to quit.")
 
 	// Wrap the entire calculator in a border
 	return calculatorBorderStyle.Render(b.String())
