@@ -102,7 +102,8 @@ func TestSpecialButtonStyles(t *testing.T) {
 		{"AC special function", 0, 0, "AC"},
 		{"percent special function", 2, 0, "%"},
 		{"division operator", 3, 0, "/"},
-		{"equals button", 2, 4, "="},
+		{"equals button", 3, 4, "="},
+		{"honk button", 2, 4, "HONK"},
 		{"number button", 0, 1, "7"},
 	}
 
@@ -212,7 +213,7 @@ func TestAllButtonsInView(t *testing.T) {
 	output := m.View()
 
 	// Check that all buttons appear in the view
-	buttons := []string{"AC", "+/-", "%", "/", "7", "8", "9", "x", "4", "5", "6", "-", "1", "2", "3", "+", "0", ".", "="}
+	buttons := []string{"AC", "+/-", "%", "/", "7", "8", "9", "x", "4", "5", "6", "-", "1", "2", "3", "+", "0", ".", "HONK", "="}
 	for _, btn := range buttons {
 		if !strings.Contains(output, btn) {
 			t.Errorf("Expected button '%s' in output", btn)

@@ -144,7 +144,7 @@ func New() model {
 			{"7", "8", "9", "x"},
 			{"4", "5", "6", "-"},
 			{"1", "2", "3", "+"},
-			{"0", ".", "="},
+			{"0", ".", "HONK", "="},
 		},
 		keys: defaultKeyMap,
 	}
@@ -295,7 +295,7 @@ func (m model) handleButtonPress(button string) (tea.Model, tea.Cmd) {
 	case button == "%":
 		val, _ := strconv.ParseFloat(m.display, 64)
 		m.display = fmt.Sprintf("%g", val/100)
-	case button == "=":
+	case button == "=" || button == "HONK":
 		if m.operand1 != "" && m.operator != "" {
 			operand2 := m.display
 			val1, err1 := strconv.ParseFloat(m.operand1, 64)
@@ -395,7 +395,7 @@ func (m model) View() string {
 
 			if val == "AC" {
 				style = acButtonStyle
-			} else if val == "=" {
+			} else if val == "=" || val == "HONK" {
 				style = equalsButtonStyle
 			} else if isOperator(val) {
 				style = operatorButtonStyle
@@ -419,11 +419,7 @@ func (m model) View() string {
 				style = highlightStyle.Copy().Width(style.GetWidth())
 			}
 
-			// Wide 0 button - spans 2 button positions (6 + 6 = 12)
-			if val == "0" {
-				style = style.Copy().Width(12)
-			}
-
+			// Previous design widened 0 when row had 3 columns; with 4-column layout keep standard width.
 			rowButtons = append(rowButtons, style.Render(val))
 		}
 		b.WriteString(lipgloss.JoinHorizontal(lipgloss.Left, rowButtons...))
@@ -442,4 +438,4 @@ func (m model) View() string {
 	return calculatorBodyStyle.Render(b.String())
 }
 
-func isSpecialFunc(s string) bool { return s == "AC" || s == "+/-" || s == "%" }
+func isSpecialFunc(s string) bool { return s == "AC" || s == "+/-" || s == "%" || s == "HONK" }
