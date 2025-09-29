@@ -23,10 +23,10 @@ var (
 
 	// Styles
 	containerStyle = lipgloss.NewStyle().
-		Background(displayColor).
-		Width(23).
-		Height(5).
-		Padding(1, 2)
+			Background(displayColor).
+			Width(23).
+			Height(4).
+			Padding(1, 2)
 
 	displayStyle = lipgloss.NewStyle().
 			Bold(true).
@@ -120,8 +120,8 @@ var defaultKeyMap = keyMap{
 
 func New() model {
 	return model{
-		display: "0",
-		previousDisplay:     "",
+		display:         "0",
+		previousDisplay: "",
 		buttons: [][]string{
 			{"AC", "+/-", "%", "/"},
 			{"7", "8", "9", "x"},

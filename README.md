@@ -4,7 +4,7 @@ A retro-styled terminal user interface calculator built with Go and Bubble Tea.
 
 *Work in progress.*
 
-![Baseline Demo](.tapes/assets/calculator-basic.gif)
+![Baseline Demo](.tapes/assets/feature-previous-operation.gif)
 
 ## Features
 
