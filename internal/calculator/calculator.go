@@ -21,6 +21,13 @@ var (
 	textColor    = lipgloss.Color("#FFFFFF") // White text
 
 	// Styles
+	prevDisplayStyle = lipgloss.NewStyle().
+			Foreground(textColor).
+			Background(displayColor).
+			Width(23).
+			Height(1).
+			Padding(0, 2).
+			Align(lipgloss.Right)
 	displayStyle = lipgloss.NewStyle().
 			Bold(true).
 			Foreground(textColor).
@@ -70,6 +77,7 @@ const (
 
 type model struct {
 	display             string
+	previous            string
 	buttons             [][]string
 	cursorX             int
 	cursorY             int
@@ -111,6 +119,7 @@ var defaultKeyMap = keyMap{
 func New() model {
 	return model{
 		display: "0",
+		previous: "",
 		buttons: [][]string{
 			{"AC", "+/-", "%", "/"},
 			{"7", "8", "9", "x"},
@@ -233,21 +242,35 @@ func (m model) handleButtonPress(button string) (tea.Model, tea.Cmd) {
 	switch {
 	case isNumber(button):
 		if m.display == "0" || m.isOperand2 {
+			// Starting new number entry
 			m.display = button
 			m.isOperand2 = false
+			if m.operator == "" && m.operand1 == "" {
+				m.previous = ""
+			}
 		} else {
 			m.display += button
 		}
 	case button == ".":
 		if !strings.Contains(m.display, ".") {
-			m.display += "."
+			if m.isOperand2 {
+				m.display = "0."
+				m.isOperand2 = false
+			} else {
+				m.display += "."
+			}
+			if m.operator == "" && m.operand1 == "" {
+				m.previous = ""
+			}
 		}
 	case isOperator(button):
 		m.operand1 = m.display
 		m.operator = button
 		m.isOperand2 = true
+		m.previous = fmt.Sprintf("%s %s", m.operand1, m.operator)
 	case button == "AC":
 		m.display = "0"
+		m.previous = ""
 		m.operand1 = ""
 		m.operator = ""
 		m.isOperand2 = false
@@ -290,6 +313,7 @@ func (m model) handleButtonPress(button string) (tea.Model, tea.Cmd) {
 			}
 			if !m.isError {
 				m.display = fmt.Sprintf("%g", result)
+				m.previous = fmt.Sprintf("%s %s %s =", m.operand1, m.operator, operand2)
 			}
 			m.operand1 = ""
 			m.operator = ""
@@ -334,6 +358,8 @@ func (m model) View() string {
 		return "Thanks for using the Goose Calculator!\n"
 	}
 	var b strings.Builder
+	b.WriteString(prevDisplayStyle.Render(m.previous))
+	b.WriteString("\n")
 	b.WriteString(displayStyle.Render(m.display))
 	b.WriteString("\n\n")
 	for y, row := range m.buttons {
