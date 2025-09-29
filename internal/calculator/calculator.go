@@ -17,10 +17,10 @@ var (
 	displayText       = lipgloss.Color("#D5F5E3") // Light green LCD text
 	displayTextDim    = lipgloss.Color("#82C9B5") // Dim green
 
-	acButtonColor     = lipgloss.Color("#C0392B") // Red AC
-	numberButtonColor = lipgloss.Color("#5D6D7E") // Gray numbers
-	operatorColor     = lipgloss.Color("#D68910") // Orange operators
-	specialColor      = lipgloss.Color("#5D6D7E") // Gray specials
+	acButtonColor      = lipgloss.Color("#C0392B") // Red AC
+	numberButtonColor  = lipgloss.Color("#5D6D7E") // Gray numbers
+	operatorColor      = lipgloss.Color("#D68910") // Orange operators
+	functionalKeyColor = lipgloss.Color("#7F8C8D") // Light gray functional keys (+/-, %, .)
 
 	buttonTextColor = lipgloss.Color("#FFFFFF") // White text
 	logoTextColor   = lipgloss.Color("#FFFFFF") // White logo
@@ -53,10 +53,10 @@ var (
 			Width(6).
 			Height(2)
 
-	numberButtonStyle   = baseButtonStyle.Copy().Background(numberButtonColor)
-	acButtonStyle       = baseButtonStyle.Copy().Background(acButtonColor)
-	operatorButtonStyle = baseButtonStyle.Copy().Background(operatorColor)
-	specialButtonStyle  = baseButtonStyle.Copy().Background(specialColor)
+	numberButtonStyle     = baseButtonStyle.Copy().Background(numberButtonColor)
+	acButtonStyle         = baseButtonStyle.Copy().Background(acButtonColor)
+	operatorButtonStyle   = baseButtonStyle.Copy().Background(operatorColor)
+	functionalButtonStyle = baseButtonStyle.Copy().Background(functionalKeyColor)
 
 	// Visual feedback
 	highlightBackground      = lipgloss.Color("#FFD700")
@@ -364,12 +364,12 @@ func (m model) View() string {
 
 	var b strings.Builder
 
-	// Logo - wider to match button grid
-	b.WriteString(logoStyle.Width(30).Render("GOOSE 🪿"))
+	// Logo - match button grid width (4 buttons × 6 chars = 24)
+	b.WriteString(logoStyle.Width(24).Render("🪿 GOOSE 🪿"))
 	b.WriteString("\n\n")
 
-	// Display - width matches 4 buttons at 6 chars each + spacing
-	displayWidth := 30
+	// Display - width matches 4 buttons at 6 chars each = 24
+	displayWidth := 24
 	var combinedDisplay string
 	if m.previousDisplay != "" {
 		prev := previousDisplayStyle.Width(displayWidth - 4).Render(m.previousDisplay)
@@ -393,8 +393,8 @@ func (m model) View() string {
 				style = acButtonStyle
 			} else if isOperator(val) || val == "=" {
 				style = operatorButtonStyle
-			} else if val == "+/-" || val == "%" {
-				style = specialButtonStyle
+			} else if val == "+/-" || val == "%" || val == "." {
+				style = functionalButtonStyle
 			} else {
 				style = numberButtonStyle
 			}
@@ -422,11 +422,12 @@ func (m model) View() string {
 		b.WriteString("\n")
 	}
 
-	// Help - use terminal default colors
+	// Help - centered to match button grid width
 	b.WriteString("\n")
 	helpText := lipgloss.NewStyle().
 		Foreground(lipgloss.Color("#95A5A6")).
-		Width(30).
+		Width(24).
+		Align(lipgloss.Center).
 		Render("Direct input: Type numbers/operators (blue).\nNavigation: Arrow keys + Enter (orange).\nPress q or esc to quit.")
 	b.WriteString(helpText)
 
