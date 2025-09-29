@@ -25,7 +25,7 @@ var (
 	containerStyle = lipgloss.NewStyle().
 		Background(displayColor).
 		Width(23).
-		Height(2).
+		Height(4).
 		Padding(1, 2)
 
 	displayStyle = lipgloss.NewStyle().
@@ -241,9 +241,14 @@ func (m model) handleButtonPress(button string) (tea.Model, tea.Cmd) {
 
 	switch {
 	case isNumber(button):
-		if m.display == "0" || m.isOperand2 {
+		if m.isOperand2 {
+			if m.operator == "" {
+				m.previousDisplay = ""
+			}
 			m.display = button
 			m.isOperand2 = false
+		} else if m.display == "0" {
+			m.display = button
 		} else {
 			m.display += button
 		}
@@ -255,6 +260,7 @@ func (m model) handleButtonPress(button string) (tea.Model, tea.Cmd) {
 		m.operand1 = m.display
 		m.operator = button
 		m.isOperand2 = true
+		m.previousDisplay = m.operand1 + " " + m.operator
 	case button == "AC":
 		m.display = "0"
 		m.previousDisplay = ""
