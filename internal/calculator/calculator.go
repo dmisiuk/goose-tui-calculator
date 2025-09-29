@@ -25,17 +25,19 @@ var (
 	containerStyle = lipgloss.NewStyle().
 		Background(displayColor).
 		Width(23).
-		Height(4).
+		Height(5).
 		Padding(1, 2)
 
 	displayStyle = lipgloss.NewStyle().
 			Bold(true).
 			Foreground(textColor).
-			Align(lipgloss.Right)
+			Align(lipgloss.Right).
+			Width(19)
 
 	previousDisplayStyle = lipgloss.NewStyle().
 				Foreground(altTextColor).
-				Align(lipgloss.Right)
+				Align(lipgloss.Right).
+				Width(19)
 
 	buttonStyle = lipgloss.NewStyle().
 			Bold(true).
@@ -353,9 +355,18 @@ func (m model) View() string {
 	var b strings.Builder
 
 	// Render previous and current display
-	previousDisplayStr := previousDisplayStyle.Render(m.previousDisplay)
-	displayStr := displayStyle.Render(m.display)
-	combinedDisplay := lipgloss.JoinVertical(lipgloss.Right, previousDisplayStr, displayStr)
+	var combinedDisplay string
+	if m.previousDisplay != "" {
+		previousDisplayStr := previousDisplayStyle.Render(m.previousDisplay)
+		displayStr := displayStyle.Render(m.display)
+		combinedDisplay = lipgloss.JoinVertical(lipgloss.Right, previousDisplayStr, displayStr)
+	} else {
+		// To maintain alignment and position, we create an empty line with the same style
+		// and join it with the main display. This ensures the main display stays at the bottom.
+		emptyLine := previousDisplayStyle.Render("")
+		displayStr := displayStyle.Render(m.display)
+		combinedDisplay = lipgloss.JoinVertical(lipgloss.Right, emptyLine, displayStr)
+	}
 	b.WriteString(containerStyle.Render(combinedDisplay))
 
 	b.WriteString("\n\n")
