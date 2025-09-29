@@ -419,9 +419,9 @@ func (m model) View() string {
 				style = highlightStyle.Copy().Width(style.GetWidth())
 			}
 
-			// Wide 0 button
+			// Wide 0 button - spans 2 button positions (6 + 6 = 12)
 			if val == "0" {
-				style = style.Copy().Width(13)
+				style = style.Copy().Width(12)
 			}
 
 			rowButtons = append(rowButtons, style.Render(val))
