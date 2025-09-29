@@ -12,59 +12,66 @@ import (
 )
 
 var (
-	// Colors
-	displayColor = lipgloss.Color("#3C4043") // A dark gray for the display background
-	buttonColor  = lipgloss.Color("#BDC1C6") // A light gray for buttons
-	specialFuncs = lipgloss.Color("#F28B82") // A reddish color for AC, +/-, %
-	operators    = lipgloss.Color("#F9AB00") // An orange for operators
-	equalsColor  = lipgloss.Color("#81C995") // A greenish color for equals
-	textColor    = lipgloss.Color("#FFFFFF") // White text
-	altTextColor = lipgloss.Color("#9E9E9E") // A dimmer white text
+	// Colors - using terminal defaults for backgrounds
+	displayBackground = lipgloss.Color("#1B5E4F") // Dark green LCD
+	displayText       = lipgloss.Color("#D5F5E3") // Light green LCD text
+	displayTextDim    = lipgloss.Color("#82C9B5") // Dim green
 
-	// Styles
-	containerStyle = lipgloss.NewStyle().
-			Background(displayColor).
-			Width(20).
-			Height(4).
-			Padding(1, 2)
+	acButtonColor     = lipgloss.Color("#C0392B") // Red AC
+	numberButtonColor = lipgloss.Color("#5D6D7E") // Gray numbers
+	operatorColor     = lipgloss.Color("#D68910") // Orange operators
+	specialColor      = lipgloss.Color("#5D6D7E") // Gray specials
+
+	buttonTextColor = lipgloss.Color("#FFFFFF") // White text
+	logoTextColor   = lipgloss.Color("#FFFFFF") // White logo
+
+	// Logo
+	logoStyle = lipgloss.NewStyle().
+			Bold(true).
+			Foreground(logoTextColor).
+			Align(lipgloss.Center)
+
+	// LCD Display
+	displayContainerStyle = lipgloss.NewStyle().
+				Background(displayBackground).
+				Padding(1, 2)
 
 	displayStyle = lipgloss.NewStyle().
 			Bold(true).
-			Foreground(textColor).
-			Align(lipgloss.Right).
-			Width(16)
+			Foreground(displayText).
+			Align(lipgloss.Right)
 
 	previousDisplayStyle = lipgloss.NewStyle().
-				Foreground(altTextColor).
-				Align(lipgloss.Right).
-				Width(16)
+				Foreground(displayTextDim).
+				Align(lipgloss.Right)
 
-	buttonStyle = lipgloss.NewStyle().
+	// Buttons - wider for better look
+	baseButtonStyle = lipgloss.NewStyle().
 			Bold(true).
-			Foreground(textColor).
-			Background(buttonColor).
+			Foreground(buttonTextColor).
 			Align(lipgloss.Center).
-			Width(5).
-			Height(1)
+			Width(6).
+			Height(2)
 
-	specialFuncsStyle = buttonStyle.Copy().Background(specialFuncs)
-	operatorStyle     = buttonStyle.Copy().Background(operators)
-	equalsStyle       = buttonStyle.Copy().Background(equalsColor)
+	numberButtonStyle   = baseButtonStyle.Copy().Background(numberButtonColor)
+	acButtonStyle       = baseButtonStyle.Copy().Background(acButtonColor)
+	operatorButtonStyle = baseButtonStyle.Copy().Background(operatorColor)
+	specialButtonStyle  = baseButtonStyle.Copy().Background(specialColor)
 
-	// Highlight and pressed button styles
-	highlightBackground      = lipgloss.Color("#FFD700") // Gold color for highlight
-	pressedBackground        = lipgloss.Color("#FF4500") // OrangeRed for pressed
-	directKeyboardBackground = lipgloss.Color("#6A5ACD") // SlateBlue for direct keyboard input
+	// Visual feedback
+	highlightBackground      = lipgloss.Color("#FFD700")
+	pressedBackground        = lipgloss.Color("#FF4500")
+	directKeyboardBackground = lipgloss.Color("#6A5ACD")
 
-	highlightStyle      = buttonStyle.Copy().Background(highlightBackground).Foreground(lipgloss.Color("#000000"))
-	pressedStyle        = buttonStyle.Copy().Background(pressedBackground).Foreground(lipgloss.Color("#FFFFFF"))
-	directKeyboardStyle = buttonStyle.Copy().Background(directKeyboardBackground).Foreground(lipgloss.Color("#FFFFFF"))
+	highlightStyle      = baseButtonStyle.Copy().Background(highlightBackground).Foreground(lipgloss.Color("#000000"))
+	pressedStyle        = baseButtonStyle.Copy().Background(pressedBackground).Foreground(buttonTextColor)
+	directKeyboardStyle = baseButtonStyle.Copy().Background(directKeyboardBackground).Foreground(buttonTextColor)
 
-	// Calculator border style
-	calculatorBorderStyle = lipgloss.NewStyle().
+	// Calculator body - NO background, use terminal default
+	calculatorBodyStyle = lipgloss.NewStyle().
 				Border(lipgloss.RoundedBorder()).
-				BorderForeground(lipgloss.Color("#9E9E9E")).
-				Padding(1)
+				BorderForeground(lipgloss.Color("#95A5A6")).
+				Padding(1, 2)
 )
 
 type tickMsg time.Time
@@ -144,7 +151,6 @@ func (m model) Init() tea.Cmd { return nil }
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tickMsg:
-		// Clear activation visual feedback after timing expires
 		if m.activationMethod != activationNone && time.Since(m.activationStartTime) > time.Millisecond*300 {
 			m.activationMethod = activationNone
 			m.pressedX = -1
@@ -152,9 +158,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return m, tick()
 	case tea.KeyMsg:
-		// Direct mapped keys (digits/operators/etc.) first
 		if btn, ok := mapKeyToButton(msg.String()); ok {
-			// Find button position for visual feedback
 			for y, row := range m.buttons {
 				for x, val := range row {
 					if val == btn {
@@ -217,7 +221,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					if msg.Y == y+2 && msg.X >= x*6 && msg.X < x*6+5 {
 						m.pressedX = x
 						m.pressedY = y
-						m.activationMethod = activationNavigation // Mouse clicks use navigation style
+						m.activationMethod = activationNavigation
 						m.activationStartTime = time.Now()
 						updatedModel, cmd := m.handleButtonPress(val)
 						if updated, ok := updatedModel.(model); ok {
@@ -231,6 +235,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 	return m, nil
 }
+
 func (m model) HandleButtonPress(button string) (model, tea.Cmd) {
 	updatedModel, cmd := m.handleButtonPress(button)
 	if updated, ok := updatedModel.(model); ok {
@@ -329,8 +334,6 @@ func isNumber(s string) bool { _, err := strconv.Atoi(s); return err == nil }
 
 func isOperator(s string) bool { return s == "+" || s == "-" || s == "x" || s == "/" }
 
-// mapKeyToButton allows direct keyboard entry of calculator buttons without navigation.
-// Supports: digits, + - * / x . = c (AC), %, and ~ as sign toggle.
 func mapKeyToButton(k string) (string, bool) {
 	if isNumber(k) {
 		return k, true
@@ -358,65 +361,76 @@ func (m model) View() string {
 	if m.isQuitting {
 		return "Thanks for using the Goose Calculator!\n"
 	}
+
 	var b strings.Builder
 
-	// Render previous and current display
+	// Logo - wider to match button grid
+	b.WriteString(logoStyle.Width(30).Render("GOOSE 🪿"))
+	b.WriteString("\n\n")
+
+	// Display - width matches 4 buttons at 6 chars each + spacing
+	displayWidth := 30
 	var combinedDisplay string
 	if m.previousDisplay != "" {
-		previousDisplayStr := previousDisplayStyle.Render(m.previousDisplay)
-		displayStr := displayStyle.Render(m.display)
-		combinedDisplay = lipgloss.JoinVertical(lipgloss.Right, previousDisplayStr, displayStr)
+		prev := previousDisplayStyle.Width(displayWidth - 4).Render(m.previousDisplay)
+		curr := displayStyle.Width(displayWidth - 4).Render(m.display)
+		combinedDisplay = lipgloss.JoinVertical(lipgloss.Right, prev, curr)
 	} else {
-		// To maintain alignment and position, we create an empty line with the same style
-		// and join it with the main display. This ensures the main display stays at the bottom.
-		emptyLine := previousDisplayStyle.Render("")
-		displayStr := displayStyle.Render(m.display)
-		combinedDisplay = lipgloss.JoinVertical(lipgloss.Right, emptyLine, displayStr)
+		empty := previousDisplayStyle.Width(displayWidth - 4).Render("")
+		curr := displayStyle.Width(displayWidth - 4).Render(m.display)
+		combinedDisplay = lipgloss.JoinVertical(lipgloss.Right, empty, curr)
 	}
-	b.WriteString(containerStyle.Render(combinedDisplay))
-
+	b.WriteString(displayContainerStyle.Width(displayWidth).Render(combinedDisplay))
 	b.WriteString("\n\n")
+
+	// Button grid
 	for y, row := range m.buttons {
-		var rowStr []string
+		var rowButtons []string
 		for x, val := range row {
-			style := buttonStyle
-			if isSpecialFunc(val) {
-				style = specialFuncsStyle
-			} else if isOperator(val) {
-				style = operatorStyle
-			} else if val == "=" {
-				style = equalsStyle
+			var style lipgloss.Style
+
+			if val == "AC" {
+				style = acButtonStyle
+			} else if isOperator(val) || val == "=" {
+				style = operatorButtonStyle
+			} else if val == "+/-" || val == "%" {
+				style = specialButtonStyle
+			} else {
+				style = numberButtonStyle
 			}
-			// Handle visual feedback based on activation method and cursor position
+
+			// Apply feedback
 			if m.pressedX == x && m.pressedY == y {
-				// Button is currently being pressed - use activation-specific style
 				switch m.activationMethod {
 				case activationDirectKeyboard:
-					style = directKeyboardStyle
+					style = directKeyboardStyle.Copy().Width(style.GetWidth())
 				case activationNavigation:
-					style = pressedStyle
+					style = pressedStyle.Copy().Width(style.GetWidth())
 				}
 			} else if m.cursorY == y && m.cursorX == x {
-				// Button is highlighted by cursor navigation
-				style = highlightStyle
+				style = highlightStyle.Copy().Width(style.GetWidth())
 			}
+
+			// Wide 0 button
 			if val == "0" {
-				style = style.Copy().Width(10)
-				rowStr = append(rowStr, style.Render(val))
-				if x+1 < len(row) {
-					x++
-				}
-			} else {
-				rowStr = append(rowStr, style.Render(val))
+				style = style.Copy().Width(13)
 			}
+
+			rowButtons = append(rowButtons, style.Render(val))
 		}
-		b.WriteString(lipgloss.JoinHorizontal(lipgloss.Left, rowStr...))
+		b.WriteString(lipgloss.JoinHorizontal(lipgloss.Left, rowButtons...))
 		b.WriteString("\n")
 	}
-	b.WriteString("\nType numbers/operators or use arrows + space/enter.\nPress q to quit.")
 
-	// Wrap the entire calculator in a border
-	return calculatorBorderStyle.Render(b.String())
+	// Help - use terminal default colors
+	b.WriteString("\n")
+	helpText := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("#95A5A6")).
+		Width(30).
+		Render("Direct input: Type numbers/operators (blue).\nNavigation: Arrow keys + Enter (orange).\nPress q or esc to quit.")
+	b.WriteString(helpText)
+
+	return calculatorBodyStyle.Render(b.String())
 }
 
 func isSpecialFunc(s string) bool { return s == "AC" || s == "+/-" || s == "%" }

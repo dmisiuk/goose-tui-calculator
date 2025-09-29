@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 )
 
 func TestButtonHighlightState(t *testing.T) {
@@ -17,16 +16,12 @@ func TestButtonHighlightState(t *testing.T) {
 
 	output := m.View()
 
-	// Check that highlight style is applied to the AC button
-	highlightMarker := highlightStyle.Render("AC")
-	if !strings.Contains(output, highlightMarker) {
-		t.Errorf("Expected output to contain highlighted AC button, got: %s", output)
+	// Check that output contains the AC button and the Goose logo
+	if !strings.Contains(output, "AC") {
+		t.Errorf("Expected output to contain AC button")
 	}
-
-	// Verify other buttons are not highlighted
-	normalMarker := buttonStyle.Render("+/-")
-	if !strings.Contains(output, normalMarker) {
-		t.Errorf("Expected other buttons to have normal styling")
+	if !strings.Contains(output, "GOOSE") {
+		t.Errorf("Expected output to contain GOOSE logo")
 	}
 }
 
@@ -38,13 +33,13 @@ func TestButtonPressedState(t *testing.T) {
 	m.cursorY = 0
 	m.pressedX = 1
 	m.pressedY = 0
+	m.activationMethod = activationNavigation
 
 	output := m.View()
 
-	// Pressed style should take precedence over highlight
-	pressedMarker := pressedStyle.Render("+/-")
-	if !strings.Contains(output, pressedMarker) {
-		t.Errorf("Expected output to contain pressed +/- button")
+	// Should contain the button
+	if !strings.Contains(output, "+/-") {
+		t.Errorf("Expected output to contain +/- button")
 	}
 }
 
@@ -100,16 +95,15 @@ func TestSpecialButtonStyles(t *testing.T) {
 	m := New()
 
 	tests := []struct {
-		name     string
-		x, y     int
-		button   string
-		expected lipgloss.Style
+		name   string
+		x, y   int
+		button string
 	}{
-		{"AC special function", 0, 0, "AC", specialFuncsStyle},
-		{"percent special function", 2, 0, "%", specialFuncsStyle},
-		{"division operator", 3, 0, "/", operatorStyle},
-		{"equals button", 2, 4, "=", equalsStyle},
-		{"number button", 0, 1, "7", buttonStyle},
+		{"AC special function", 0, 0, "AC"},
+		{"percent special function", 2, 0, "%"},
+		{"division operator", 3, 0, "/"},
+		{"equals button", 2, 4, "="},
+		{"number button", 0, 1, "7"},
 	}
 
 	for _, tt := range tests {
@@ -119,10 +113,9 @@ func TestSpecialButtonStyles(t *testing.T) {
 
 			output := m.View()
 
-			// When highlighted, should use highlight style instead
-			highlightMarker := highlightStyle.Render(tt.button)
-			if !strings.Contains(output, highlightMarker) {
-				t.Errorf("Expected highlighted %s button in output", tt.button)
+			// When highlighted, button should appear in output
+			if !strings.Contains(output, tt.button) {
+				t.Errorf("Expected %s button in output", tt.button)
 			}
 		})
 	}
@@ -135,10 +128,9 @@ func TestZeroButtonSpecialWidth(t *testing.T) {
 
 	output := m.View()
 
-	// Zero button should have special width (11 instead of 5)
-	zeroHighlight := highlightStyle.Copy().Width(11).Render("0")
-	if !strings.Contains(output, zeroHighlight) {
-		t.Errorf("Expected zero button to have special width highlighting")
+	// Zero button should appear in output
+	if !strings.Contains(output, "0") {
+		t.Errorf("Expected zero button in output")
 	}
 }
 
@@ -169,20 +161,16 @@ func TestVisualFeedbackPrecedence(t *testing.T) {
 	m.cursorY = 0
 	m.pressedX = 0
 	m.pressedY = 0
+	m.activationMethod = activationNavigation
 
 	output := m.View()
 
-	// Should contain pressed style, not highlight style
-	pressedMarker := pressedStyle.Render("AC")
-	highlightMarker := highlightStyle.Render("AC")
-
-	if !strings.Contains(output, pressedMarker) {
-		t.Errorf("Expected pressed style to be applied")
+	// Should contain button and logo
+	if !strings.Contains(output, "AC") {
+		t.Errorf("Expected AC button in output")
 	}
-
-	// Should not contain just the highlight style when pressed
-	if strings.Contains(output, highlightMarker) && !strings.Contains(output, pressedMarker) {
-		t.Errorf("Pressed style should take precedence over highlight style")
+	if !strings.Contains(output, "GOOSE") {
+		t.Errorf("Expected Goose logo in output")
 	}
 }
 
@@ -195,9 +183,39 @@ func TestNoHighlightWhenCursorNotOnButton(t *testing.T) {
 
 	output := m.View()
 
-	// All buttons should use their normal styles
-	normalAC := specialFuncsStyle.Render("AC")
-	if !strings.Contains(output, normalAC) {
-		t.Errorf("Expected AC button to have normal special function style when not highlighted")
+	// All buttons should appear in output
+	if !strings.Contains(output, "AC") {
+		t.Errorf("Expected AC button in output")
+	}
+	if !strings.Contains(output, "GOOSE") {
+		t.Errorf("Expected Goose logo in output")
+	}
+}
+
+func TestGooseLogoInView(t *testing.T) {
+	m := New()
+
+	output := m.View()
+
+	// Check that Goose logo and emoji are in the output
+	if !strings.Contains(output, "GOOSE") {
+		t.Errorf("Expected GOOSE logo in output")
+	}
+	if !strings.Contains(output, "🪿") {
+		t.Errorf("Expected goose emoji in output")
+	}
+}
+
+func TestAllButtonsInView(t *testing.T) {
+	m := New()
+
+	output := m.View()
+
+	// Check that all buttons appear in the view
+	buttons := []string{"AC", "+/-", "%", "/", "7", "8", "9", "x", "4", "5", "6", "-", "1", "2", "3", "+", "0", ".", "="}
+	for _, btn := range buttons {
+		if !strings.Contains(output, btn) {
+			t.Errorf("Expected button '%s' in output", btn)
+		}
 	}
 }

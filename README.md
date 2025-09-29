@@ -1,24 +1,23 @@
-# Goose TUI Calculator
+# Goose TUI Calculator 🪿
 
-A retro-styled terminal user interface calculator built with Go and Bubble Tea.
+A Casio-style terminal user interface calculator built with Go and Bubble Tea, featuring the Goose logo and authentic retro LCD design.
 
 *Work in progress.*
 
-![Baseline Demo](.tapes/assets/feature-display-alignment.gif)
+![Baseline Demo](.tapes/assets/feature-no-battery.gif)
 
 ## Features
 
-### Display Alignment & Professional UI
-Perfect visual alignment and professional appearance with rounded border containment:
+### Casio-Style Design with Goose Branding
+Authentic calculator appearance inspired by classic Casio calculators:
 
-![Display Alignment Demo](.tapes/assets/feature-display-alignment.gif)
+![Goose Logo Casio UI Demo](.tapes/assets/feature-no-battery.gif)
 
-- **Perfect alignment** - Display container matches keyboard width exactly (20 characters)
-- **Consistent button rows** - All keyboard rows have uniform alignment with no overflow
-- **Professional border** - Rounded border around entire calculator for visual containment  
-- **Optimized layout** - Help text split into efficient 2-line format
-- **Space efficiency** - No wasted empty space on right side of interface
-- **Maintains functionality** - All existing features preserved with improved presentation
+- **Goose Logo 🪿** - Distinctive branding at the top of the calculator
+- **Green LCD Display** - Authentic dark green background with light green text
+- **Color-coded Buttons** - Red AC button, orange operators, gray number keys
+- **Casio Aesthetics** - Clean layout with proper borders
+- **Professional Layout** - Multi-line instructions with clear color coding for input methods
 
 ### Previous Operation Display
 The calculator shows your previous operation on a second line above the current input:
