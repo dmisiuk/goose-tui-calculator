@@ -24,7 +24,7 @@ var (
 	// Styles
 	containerStyle = lipgloss.NewStyle().
 			Background(displayColor).
-			Width(23).
+			Width(20).
 			Height(4).
 			Padding(1, 2)
 
@@ -32,12 +32,12 @@ var (
 			Bold(true).
 			Foreground(textColor).
 			Align(lipgloss.Right).
-			Width(19)
+			Width(16)
 
 	previousDisplayStyle = lipgloss.NewStyle().
 				Foreground(altTextColor).
 				Align(lipgloss.Right).
-				Width(19)
+				Width(16)
 
 	buttonStyle = lipgloss.NewStyle().
 			Bold(true).
