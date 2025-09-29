@@ -13,11 +13,18 @@ Authentic calculator appearance inspired by classic Casio calculators:
 
 ![Goose Logo Casio UI Demo](.tapes/assets/feature-no-battery.gif)
 
-- **Goose Logo 🪿** - Distinctive branding at the top of the calculator
+- **Dual Goose Logo 🪿** - Distinctive dual goose branding (🪿 GOOSE 🪿) at the top
 - **Green LCD Display** - Authentic dark green background with light green text
-- **Color-coded Buttons** - Red AC button, orange operators, gray number keys
+- **Perfect Alignment** - Display and button grid precisely aligned at 24 chars
+- **Rich Color Scheme** - Distinct colors for different key types:
+  - AC: Red for clear action
+  - Numbers (1-9): Dark gray
+  - Zero (0): Darker blue-gray for emphasis
+  - Operators (+, -, x, /): Orange
+  - Equals (=): Bright orange to highlight action
+  - Functional keys (+/-, %, .): Light gray
 - **Casio Aesthetics** - Clean layout with proper borders
-- **Professional Layout** - Multi-line instructions with clear color coding for input methods
+- **Simplified Help** - Essential information only: "Press q or esc to quit"
 
 ### Previous Operation Display
 The calculator shows your previous operation on a second line above the current input:
