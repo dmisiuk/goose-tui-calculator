@@ -4,9 +4,21 @@ A retro-styled terminal user interface calculator built with Go and Bubble Tea.
 
 *Work in progress.*
 
-![Baseline Demo](.tapes/assets/feature-previous-operation.gif)
+![Baseline Demo](.tapes/assets/feature-display-alignment.gif)
 
 ## Features
+
+### Display Alignment & Professional UI
+Perfect visual alignment and professional appearance with rounded border containment:
+
+![Display Alignment Demo](.tapes/assets/feature-display-alignment.gif)
+
+- **Perfect alignment** - Display container matches keyboard width exactly (20 characters)
+- **Consistent button rows** - All keyboard rows have uniform alignment with no overflow
+- **Professional border** - Rounded border around entire calculator for visual containment  
+- **Optimized layout** - Help text split into efficient 2-line format
+- **Space efficiency** - No wasted empty space on right side of interface
+- **Maintains functionality** - All existing features preserved with improved presentation
 
 ### Previous Operation Display
 The calculator shows your previous operation on a second line above the current input:
