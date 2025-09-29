@@ -42,12 +42,32 @@ When working on a new feature, ensure all of the following are completed:
 - [ ] **Edge case testing**: Test error conditions and boundary cases
 - [ ] **Regression testing**: Verify existing functionality still works
 
+### 📚 **Documentation Requirements**
+- [ ] **README baseline demo**: Update main demo to showcase richest functionality
+- [ ] **Feature documentation**: Add feature description with bullet points
+- [ ] **Demo history**: Ensure `docs/demo-history.md` reflects the change timeline
+- [ ] **VHS tape quality**: Regenerate demos after any visual fixes
+
+### 🔍 **Pre-PR Verification**
+- [ ] **All workflow steps completed**: Go through this entire checklist
+- [ ] **Demo selection correct**: Use most recent feature as Before demo
+- [ ] **Visual alignment verified**: No extra spacing or misalignment
+- [ ] **GitHub URLs working**: Test that PR images display correctly
+- [ ] **Branch up to date**: Push all commits including visual fixes
+
 ## Visual Demo Design Guidelines
 - Keep tapes short (< 15 seconds runtime) unless necessary.
 - Show only the *minimal steps* to demonstrate the feature.
 - Use a consistent font size (e.g., 18) for readability.
 - Avoid randomness or timing dependencies.
 - If timing is required, use `Sleep 300ms` intervals—too long slows CI.
+
+### Visual Quality Checks
+- [ ] **Alignment verification**: Check for proper alignment, no empty lines or extra spacing
+- [ ] **Container sizing**: Ensure display containers fit content without extra space
+- [ ] **Multi-line displays**: Verify line positioning and spacing in multi-line features
+- [ ] **Manual testing**: Run the calculator locally to verify visual appearance
+- [ ] **Demo accuracy**: Ensure GIF accurately represents the actual application behavior
 
 ## Tape Naming Conventions
 | Purpose | Pattern | Example |
@@ -78,15 +98,38 @@ mv ./*.gif .tapes/assets/ 2>/dev/null || true
 A future helper script may formalize this.
 
 ## Pull Request Visual Sections
+
+### Demo Selection Guidelines
+- **Before demo**: Use the **most recent feature demo** from `docs/demo-history.md`, NOT the basic calculator
+- **After demo**: Use your new feature demo from your feature branch
+- **Proper progression**: Show logical feature evolution (e.g., enhanced-visual-feedback → enhanced-visual-feedback + previous-operation)
+
+### GitHub Raw URL Format
+Use proper GitHub raw URLs with embedded markdown images:
+```markdown
+## Before
+![Before](https://raw.githubusercontent.com/dmisiuk/goose-tui-calculator/main/.tapes/assets/feature-[previous-feature].gif)
+
+## After
+![After](https://raw.githubusercontent.com/dmisiuk/goose-tui-calculator/feature/[your-branch]/.tapes/assets/feature-[your-feature].gif)
+```
+
+### PR Image Requirements
+- [ ] **Embedded GIFs**: Use `![Alt](URL)` syntax, not just file paths
+- [ ] **Branch-specific URLs**: Before from `main`, After from your feature branch
+- [ ] **Demo history reference**: Check `docs/demo-history.md` for proper Before demo
+- [ ] **Visual verification**: Ensure GIFs actually display in PR preview
+
 Example PR snippet:
 ```markdown
 ## Before
-![Before](https://raw.githubusercontent.com/dmisiuk/goose-tui-calculator/<commit-or-branch>/.tapes/assets/calculator-basic.gif)
+Enhanced visual feedback calculator without previous operation display:
+![Before](https://raw.githubusercontent.com/dmisiuk/goose-tui-calculator/main/.tapes/assets/feature-enhanced-visual-feedback.gif)
 
 ## After
-![After](https://raw.githubusercontent.com/dmisiuk/goose-tui-calculator/<branch>/.tapes/assets/feature-sign-toggle.gif)
+Calculator with both enhanced visual feedback AND previous operation display:
+![After](https://raw.githubusercontent.com/dmisiuk/goose-tui-calculator/feature/previous-operation/.tapes/assets/feature-previous-operation.gif)
 ```
-For new features: mark Before as `N/A`.
 
 ## Demo Update Decision Tree
 | Change Type | Update Tape? | Notes |
@@ -108,10 +151,36 @@ For new features: mark Before as `N/A`.
 - Lint: ensure PR template filled (GitHub Action)
 - Badge: “Visual demos passing” (custom status)
 
+## Common Issues and Corrective Actions
+
+### PR Demo Issues
+**Problem**: PR shows file paths instead of embedded GIFs
+**Solution**: Use proper markdown image syntax `![Alt](https://raw.githubusercontent.com/...)` with GitHub raw URLs
+
+**Problem**: Using basic calculator as Before demo instead of latest feature
+**Solution**: Always check `docs/demo-history.md` for the most recent feature demo
+
+### Visual Alignment Issues
+**Problem**: Extra empty lines or misaligned display elements
+**Solution**: 
+1. Check container height vs content needs
+2. Verify padding and spacing calculations  
+3. Test manually before regenerating demos
+4. Compare Before/After visually for regressions
+
+### Workflow Verification
+**Problem**: Missing steps in development process
+**Solution**: Use the checklist systematically - don't skip verification steps
+
+**Problem**: Incomplete documentation updates
+**Solution**: Update README baseline demo to always show richest functionality
+
 ## FAQ
 **Q: Do I commit generated GIFs?**  Yes, they are reviewed artifacts.
 **Q: Can I combine multiple features in one tape?** Prefer one tape per discrete behavior unless tightly coupled.
 **Q: What if a feature is experimental?** Mark the Issue and optionally prefix tape with `exp-` (may be removed before release).
+**Q: How do I know which demo to use as Before?** Check `docs/demo-history.md` for the chronological order and use the most recent feature.
+**Q: My display looks misaligned - what should I check?** Verify container height, padding, and line spacing. Test manually before committing.
 
 ---
 This workflow ensures every behavioral change is testable *and* reviewable visually.
