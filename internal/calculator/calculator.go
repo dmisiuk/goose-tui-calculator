@@ -24,7 +24,7 @@ var (
 	// Styles
 	containerStyle = lipgloss.NewStyle().
 			Background(displayColor).
-			Width(23).
+			Width(20).
 			Height(4).
 			Padding(1, 2)
 
@@ -32,12 +32,12 @@ var (
 			Bold(true).
 			Foreground(textColor).
 			Align(lipgloss.Right).
-			Width(19)
+			Width(16)
 
 	previousDisplayStyle = lipgloss.NewStyle().
 				Foreground(altTextColor).
 				Align(lipgloss.Right).
-				Width(19)
+				Width(16)
 
 	buttonStyle = lipgloss.NewStyle().
 			Bold(true).
@@ -59,6 +59,12 @@ var (
 	highlightStyle      = buttonStyle.Copy().Background(highlightBackground).Foreground(lipgloss.Color("#000000"))
 	pressedStyle        = buttonStyle.Copy().Background(pressedBackground).Foreground(lipgloss.Color("#FFFFFF"))
 	directKeyboardStyle = buttonStyle.Copy().Background(directKeyboardBackground).Foreground(lipgloss.Color("#FFFFFF"))
+
+	// Calculator border style
+	calculatorBorderStyle = lipgloss.NewStyle().
+				Border(lipgloss.RoundedBorder()).
+				BorderForeground(lipgloss.Color("#9E9E9E")).
+				Padding(1)
 )
 
 type tickMsg time.Time
@@ -395,7 +401,7 @@ func (m model) View() string {
 				style = highlightStyle
 			}
 			if val == "0" {
-				style = style.Copy().Width(11)
+				style = style.Copy().Width(10)
 				rowStr = append(rowStr, style.Render(val))
 				if x+1 < len(row) {
 					x++
@@ -407,8 +413,10 @@ func (m model) View() string {
 		b.WriteString(lipgloss.JoinHorizontal(lipgloss.Left, rowStr...))
 		b.WriteString("\n")
 	}
-	b.WriteString("\nDirect input: Type numbers/operators (blue). Navigation: Arrow keys + Enter (orange). Press q or esc to quit.\n")
-	return b.String()
+	b.WriteString("\nType numbers/operators or use arrows + space/enter.\nPress q to quit.")
+
+	// Wrap the entire calculator in a border
+	return calculatorBorderStyle.Render(b.String())
 }
 
 func isSpecialFunc(s string) bool { return s == "AC" || s == "+/-" || s == "%" }

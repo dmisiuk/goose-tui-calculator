@@ -4,6 +4,7 @@ This file tracks baseline visual demo changes over time.
 
 | Date (UTC) | Commit | Tape | Description | Rationale |
 |-----------|--------|------|-------------|-----------|
+| 2025-09-29 | (pending) | feature-display-alignment.tape | Display aligned with keyboard layout for better visual symmetry | Fix visual misalignment where display container was wider than keyboard |
 | 2025-09-29 | (pending) | feature-previous-operation.tape | Second line on display shows previous operation | Improve user experience by providing context of the last calculation |
 | (pending) | (pending) | calculator-basic.tape | Initial baseline added | Establish comparison point |
 | 2025-09-28 | b45236a | feature-enhanced-visual-feedback.tape | Enhanced visual feedback with distinct colors for input methods | Added blue/purple for direct keyboard, orange for navigation, 300ms timing (PR #17) |
