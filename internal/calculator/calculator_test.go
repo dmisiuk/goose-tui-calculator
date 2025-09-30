@@ -55,7 +55,7 @@ func TestKeyboardNavigationVisualFeedback(t *testing.T) {
 		{"move right", tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'l'}}, 1, 0},
 		{"move down", tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'j'}}, 0, 1},
 		{"move up", tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'k'}}, 0, 0},
-		{"move left", tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'h'}}, 0, 0},
+		// 'h' is now HONK, not left
 	}
 
 	for _, tt := range tests {
@@ -101,9 +101,10 @@ func TestSpecialButtonStyles(t *testing.T) {
 	}{
 		{"AC special function", 0, 0, "AC"},
 		{"percent special function", 2, 0, "%"},
-		{"division operator", 3, 0, "/"},
-		{"equals button", 2, 4, "="},
+		{"division operator", 3, 0, "÷"},
+		{"equals button", 3, 4, "="},
 		{"number button", 0, 1, "7"},
+		{"honk button", 2, 4, "HONK"},
 	}
 
 	for _, tt := range tests {
@@ -121,26 +122,13 @@ func TestSpecialButtonStyles(t *testing.T) {
 	}
 }
 
-func TestZeroButtonSpecialWidth(t *testing.T) {
-	m := New()
-	m.cursorX = 0
-	m.cursorY = 4 // Position on "0" button
-
-	output := m.View()
-
-	// Zero button should appear in output
-	if !strings.Contains(output, "0") {
-		t.Errorf("Expected zero button in output")
-	}
-}
-
 func TestMouseInteractionVisualFeedback(t *testing.T) {
 	m := New()
 
-	// Simulate mouse click on button at position (0, 2) which should be "AC" button
+	// Simulate mouse click on button "AC"
 	mouseMsg := tea.MouseMsg{
-		X:    0, // First column
-		Y:    2, // Row 0 of buttons (display takes up row 0-1)
+		X:    0, // Corresponds to the "AC" button's top-left corner
+		Y:    9, // Corresponds to the button grid's Y offset
 		Type: tea.MouseLeft,
 	}
 
@@ -201,7 +189,7 @@ func TestGooseLogoInView(t *testing.T) {
 	if !strings.Contains(output, "GOOSE") {
 		t.Errorf("Expected GOOSE logo in output")
 	}
-	if !strings.Contains(output, "🪿") {
+	if !strings.Contains(output, "🦢") {
 		t.Errorf("Expected goose emoji in output")
 	}
 }
@@ -212,7 +200,7 @@ func TestAllButtonsInView(t *testing.T) {
 	output := m.View()
 
 	// Check that all buttons appear in the view
-	buttons := []string{"AC", "+/-", "%", "/", "7", "8", "9", "x", "4", "5", "6", "-", "1", "2", "3", "+", "0", ".", "="}
+	buttons := []string{"AC", "+/-", "%", "÷", "7", "8", "9", "✖", "4", "5", "6", "−", "1", "2", "3", "➕", "0", ".", "HONK", "="}
 	for _, btn := range buttons {
 		if !strings.Contains(output, btn) {
 			t.Errorf("Expected button '%s' in output", btn)

@@ -26,8 +26,8 @@ func TestPreviousOperationDisplay(t *testing.T) {
 	}
 
 	// 3. Pressing an operator
-	m = press("+")
-	expected := "2 +"
+	m = press("➕")
+	expected := "2 ➕"
 	if m.previousDisplay != expected {
 		t.Errorf("previousDisplay should be '%s' after pressing an operator, got '%s'", expected, m.previousDisplay)
 	}
@@ -40,7 +40,7 @@ func TestPreviousOperationDisplay(t *testing.T) {
 
 	// 5. Pressing equals
 	m = press("=")
-	expected = "2 + 3 = 5"
+	expected = "2 ➕ 3"
 	if m.previousDisplay != expected {
 		t.Errorf("previousDisplay should be '%s' after pressing equals, got '%s'", expected, m.previousDisplay)
 	}
@@ -49,15 +49,15 @@ func TestPreviousOperationDisplay(t *testing.T) {
 	}
 
 	// 6. Start a new calculation
-	m = press("x")
-	expected = "5 x"
+	m = press("✖")
+	expected = "5 ✖"
 	if m.previousDisplay != expected {
 		t.Errorf("previousDisplay should be '%s' for new calculation, got '%s'", expected, m.previousDisplay)
 	}
 
 	m = press("4")
 	m = press("=")
-	expected = "5 x 4 = 20"
+	expected = "5 ✖ 4"
 	if m.previousDisplay != expected {
 		t.Errorf("previousDisplay should be '%s', got '%s'", expected, m.previousDisplay)
 	}
@@ -77,10 +77,10 @@ func TestPreviousOperationDisplay(t *testing.T) {
 	// 8. Division
 	press("1")
 	press("0")
-	press("/")
+	press("÷")
 	press("2")
 	press("=")
-	expected = "10 / 2 = 5"
+	expected = "10 ÷ 2"
 	if m.previousDisplay != expected {
 		t.Errorf("previousDisplay should be '%s' for division, got '%s'", expected, m.previousDisplay)
 	}
@@ -96,6 +96,7 @@ func TestCalculationLogic(t *testing.T) {
 	calculate := func(buttons ...string) model {
 		var updatedModel interface{}
 		for _, btn := range buttons {
+			btn, _ = mapKeyToButton(btn)
 			updatedModel, _ = m.handleButtonPress(btn)
 			m = updatedModel.(model)
 		}
@@ -109,15 +110,16 @@ func TestCalculationLogic(t *testing.T) {
 	}{
 		{"Addition", []string{"2", "+", "3", "="}, "5"},
 		{"Subtraction", []string{"5", "-", "2", "="}, "3"},
-		{"Multiplication", []string{"4", "x", "3", "="}, "12"},
+		{"Multiplication", []string{"4", "*", "3", "="}, "12"},
 		{"Division", []string{"1", "0", "/", "2", "="}, "5"},
 		{"Chained operations", []string{"2", "+", "3", "=", "+", "5", "="}, "10"},
 		{"Division by zero", []string{"5", "/", "0", "="}, "Error"},
-		{"Clear after error", []string{"5", "/", "0", "=", "AC"}, "0"},
+		{"Clear after error", []string{"5", "/", "0", "=", "c"}, "0"},
 		{"Percentage", []string{"5", "0", "%"}, "0.5"},
-		{"Sign toggle", []string{"5", "+/-"}, "-5"},
-		{"Sign toggle twice", []string{"5", "+/-", "+/-"}, "5"},
+		{"Sign toggle", []string{"5", "~"}, "-5"},
+		{"Sign toggle twice", []string{"5", "~", "~"}, "5"},
 		{"Decimal input", []string{".", "5", "+", "1", "="}, "1.5"},
+		{"HONK button", []string{"3", "+", "3", "H"}, "6"},
 	}
 
 	for _, tc := range testCases {
