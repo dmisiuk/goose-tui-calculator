@@ -12,70 +12,87 @@ import (
 )
 
 var (
-	// Colors - using terminal defaults for backgrounds
-	displayBackground = lipgloss.Color("#1B5E4F") // Dark green LCD
-	displayText       = lipgloss.Color("#D5F5E3") // Light green LCD text
-	displayTextDim    = lipgloss.Color("#82C9B5") // Dim green
+	// Colors
+	bgColor         = lipgloss.Color("#1c1c1c")
+	displayColor    = lipgloss.Color("#2E8B57") // SeaGreen
+	resultColor     = lipgloss.Color("#32CD32") // LimeGreen
+	exprColor       = lipgloss.Color("#708090") // SlateGray
+	titleColor      = lipgloss.Color("#FFD700") // Gold
+	borderColor     = lipgloss.Color("#8A2BE2") // BlueViolet
+	buttonTextColor = lipgloss.Color("#FFFFFF")
 
-	acButtonColor      = lipgloss.Color("#C0392B") // Red AC
-	numberButtonColor  = lipgloss.Color("#5D6D7E") // Gray numbers
-	operatorColor      = lipgloss.Color("#D68910") // Orange operators
-	functionalKeyColor = lipgloss.Color("#7F8C8D") // Light gray functional keys (+/-, %, .)
-	zeroButtonColor    = lipgloss.Color("#34495E") // Darker blue-gray for 0
-	equalsButtonColor  = lipgloss.Color("#E67E22") // Bright orange for equals
-
-	buttonTextColor = lipgloss.Color("#FFFFFF") // White text
-	logoTextColor   = lipgloss.Color("#FFFFFF") // White logo
+	// Button colors
+	acColor       = lipgloss.Color("#FF4500") // OrangeRed
+	numColor      = lipgloss.Color("#6495ED") // CornflowerBlue
+	opColor       = lipgloss.Color("#FFA500") // Orange
+	funcColor     = lipgloss.Color("#B0C4DE") // LightSteelBlue
+	equalsColor   = lipgloss.Color("#FFD700") // Gold
+	honkColor     = lipgloss.Color("#FF69B4") // HotPink
+	zeroColor     = numColor
+	inactiveColor = lipgloss.Color("#444444")
 
 	// Logo
 	logoStyle = lipgloss.NewStyle().
 			Bold(true).
-			Foreground(logoTextColor).
+			Foreground(titleColor).
 			Align(lipgloss.Center)
 
-	// LCD Display
+	// Display
 	displayContainerStyle = lipgloss.NewStyle().
-				Background(displayBackground).
+				Background(displayColor).
+				Border(lipgloss.ThickBorder(), false, false, false, true).
+				BorderTop(false).
+				BorderBottom(true).
+				BorderLeft(false).
+				BorderRight(false).
+				BorderForeground(borderColor).
 				Padding(1, 2)
 
 	displayStyle = lipgloss.NewStyle().
 			Bold(true).
-			Foreground(displayText).
+			Foreground(resultColor).
 			Align(lipgloss.Right)
 
 	previousDisplayStyle = lipgloss.NewStyle().
-				Foreground(displayTextDim).
+				Foreground(exprColor).
 				Align(lipgloss.Right)
 
-	// Buttons - wider for better look
+	// Buttons
 	baseButtonStyle = lipgloss.NewStyle().
 			Bold(true).
 			Foreground(buttonTextColor).
 			Align(lipgloss.Center).
-			Width(6).
-			Height(2)
+			Width(7).
+			Height(2).
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(inactiveColor)
 
-	numberButtonStyle     = baseButtonStyle.Copy().Background(numberButtonColor)
-	acButtonStyle         = baseButtonStyle.Copy().Background(acButtonColor)
-	operatorButtonStyle   = baseButtonStyle.Copy().Background(operatorColor)
-	functionalButtonStyle = baseButtonStyle.Copy().Background(functionalKeyColor)
-	zeroButtonStyle       = baseButtonStyle.Copy().Background(zeroButtonColor)
-	equalsButtonStyle     = baseButtonStyle.Copy().Background(equalsButtonColor)
+	acButtonStyle         = baseButtonStyle.Copy().Background(acColor)
+	numberButtonStyle     = baseButtonStyle.Copy().Background(numColor)
+	operatorButtonStyle   = baseButtonStyle.Copy().Background(opColor)
+	functionalButtonStyle = baseButtonStyle.Copy().Background(funcColor).Foreground(lipgloss.Color("#000000"))
+	equalsButtonStyle     = baseButtonStyle.Copy().Background(equalsColor).Foreground(lipgloss.Color("#000000"))
+	honkButtonStyle       = baseButtonStyle.Copy().Background(honkColor)
+	zeroButtonStyle       = baseButtonStyle.Copy().Background(zeroColor)
 
 	// Visual feedback
-	highlightBackground      = lipgloss.Color("#FFD700")
-	pressedBackground        = lipgloss.Color("#FF4500")
-	directKeyboardBackground = lipgloss.Color("#6A5ACD")
+	highlightStyle = baseButtonStyle.Copy().
+			Border(lipgloss.ThickBorder()).
+			BorderForeground(lipgloss.Color("#FFFFFF"))
 
-	highlightStyle      = baseButtonStyle.Copy().Background(highlightBackground).Foreground(lipgloss.Color("#000000"))
-	pressedStyle        = baseButtonStyle.Copy().Background(pressedBackground).Foreground(buttonTextColor)
-	directKeyboardStyle = baseButtonStyle.Copy().Background(directKeyboardBackground).Foreground(buttonTextColor)
+	pressedStyle = baseButtonStyle.Copy().
+			Background(lipgloss.Color("#FFFFFF")).
+			Foreground(lipgloss.Color("#000000"))
 
-	// Calculator body - NO background, use terminal default
+	directKeyboardStyle = baseButtonStyle.Copy().
+				Background(lipgloss.Color("#FF00FF")) // Magenta for direct key press
+
+	// Calculator body
 	calculatorBodyStyle = lipgloss.NewStyle().
-				Border(lipgloss.RoundedBorder()).
-				BorderForeground(lipgloss.Color("#95A5A6")).
-				Padding(1, 2)
+				Border(lipgloss.DoubleBorder()).
+				BorderForeground(borderColor).
+				Padding(1).
+				Background(bgColor)
 )
 
 type tickMsg time.Time
@@ -140,11 +157,11 @@ func New() model {
 		display:         "0",
 		previousDisplay: "",
 		buttons: [][]string{
-			{"AC", "+/-", "%", "/"},
-			{"7", "8", "9", "x"},
-			{"4", "5", "6", "-"},
-			{"1", "2", "3", "+"},
-			{"0", ".", "="},
+			{"AC", "+/-", "%", "÷"},
+			{"7", "8", "9", "✖"},
+			{"4", "5", "6", "−"},
+			{"1", "2", "3", "➕"},
+			{"0", ".", "HONK", "="},
 		},
 		keys: defaultKeyMap,
 	}
@@ -222,7 +239,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if msg.Type == tea.MouseLeft {
 			for y, row := range m.buttons {
 				for x, val := range row {
-					if msg.Y == y+2 && msg.X >= x*6 && msg.X < x*6+5 {
+					// NOTE: This layout calculation is simplified. A more robust TUI would
+					// not have hardcoded layout logic in the update function.
+					const buttonGridYOffset = 9
+					const buttonWidth = 7
+					const buttonSpacing = 1
+					gridX := x * (buttonWidth + buttonSpacing)
+					gridY := y + buttonGridYOffset
+
+					// Clicks are registered on the top line of the 2-line-height buttons
+					if msg.Y == gridY && msg.X >= gridX && msg.X < gridX+buttonWidth {
 						m.pressedX = x
 						m.pressedY = y
 						m.activationMethod = activationNavigation
@@ -295,7 +321,7 @@ func (m model) handleButtonPress(button string) (tea.Model, tea.Cmd) {
 	case button == "%":
 		val, _ := strconv.ParseFloat(m.display, 64)
 		m.display = fmt.Sprintf("%g", val/100)
-	case button == "=":
+	case button == "=" || button == "HONK":
 		if m.operand1 != "" && m.operator != "" {
 			operand2 := m.display
 			val1, err1 := strconv.ParseFloat(m.operand1, 64)
@@ -307,13 +333,13 @@ func (m model) handleButtonPress(button string) (tea.Model, tea.Cmd) {
 			}
 			var result float64
 			switch m.operator {
-			case "+":
+			case "➕":
 				result = val1 + val2
-			case "-":
+			case "−":
 				result = val1 - val2
-			case "x":
+			case "✖":
 				result = val1 * val2
-			case "/":
+			case "÷":
 				if val2 == 0 {
 					m.display = "Error"
 					m.isError = true
@@ -322,7 +348,7 @@ func (m model) handleButtonPress(button string) (tea.Model, tea.Cmd) {
 				result = val1 / val2
 			}
 			if !m.isError {
-				m.previousDisplay = fmt.Sprintf("%s %s %s = %g", m.operand1, m.operator, operand2, result)
+				m.previousDisplay = fmt.Sprintf("%s %s %s", m.operand1, m.operator, operand2)
 				m.display = fmt.Sprintf("%g", result)
 			}
 			m.operand1 = ""
@@ -336,17 +362,21 @@ func (m model) handleButtonPress(button string) (tea.Model, tea.Cmd) {
 
 func isNumber(s string) bool { _, err := strconv.Atoi(s); return err == nil }
 
-func isOperator(s string) bool { return s == "+" || s == "-" || s == "x" || s == "/" }
+func isOperator(s string) bool { return s == "➕" || s == "−" || s == "✖" || s == "÷" }
 
 func mapKeyToButton(k string) (string, bool) {
 	if isNumber(k) {
 		return k, true
 	}
 	switch k {
-	case "+", "-", "/":
-		return k, true
+	case "+":
+		return "➕", true
+	case "-":
+		return "−", true
+	case "/":
+		return "÷", true
 	case "*", "x":
-		return "x", true
+		return "✖", true
 	case ".":
 		return ".", true
 	case "=":
@@ -357,6 +387,8 @@ func mapKeyToButton(k string) (string, bool) {
 		return "%", true
 	case "~":
 		return "+/-", true
+	case "h", "H":
+		return "HONK", true
 	}
 	return "", false
 }
@@ -367,24 +399,35 @@ func (m model) View() string {
 	}
 
 	var b strings.Builder
+	totalWidth := 31 // 4 buttons * 7 width + 3 spaces
 
-	// Logo - match button grid width (4 buttons × 6 chars = 24)
-	b.WriteString(logoStyle.Width(24).Render("🪿 GOOSE 🪿"))
-	b.WriteString("\n\n")
+	// Title
+	b.WriteString(logoStyle.Width(totalWidth).Render("🦢  GOOSE CALC  🦢"))
+	b.WriteString("\n")
 
-	// Display - width matches 4 buttons at 6 chars each = 24
-	displayWidth := 24
-	var combinedDisplay string
-	if m.previousDisplay != "" {
-		prev := previousDisplayStyle.Width(displayWidth - 4).Render(m.previousDisplay)
-		curr := displayStyle.Width(displayWidth - 4).Render(m.display)
-		combinedDisplay = lipgloss.JoinVertical(lipgloss.Right, prev, curr)
-	} else {
-		empty := previousDisplayStyle.Width(displayWidth - 4).Render("")
-		curr := displayStyle.Width(displayWidth - 4).Render(m.display)
-		combinedDisplay = lipgloss.JoinVertical(lipgloss.Right, empty, curr)
+	// Display
+	isFinished := m.lastButton == "=" || m.lastButton == "HONK"
+
+	exprLine := "Expr: " + m.previousDisplay
+	resLine := "Result: " + m.display
+
+	if isFinished {
+		resLine += " ✅"
+	} else if m.isOperand2 {
+		resLine = "Result: "
 	}
-	b.WriteString(displayContainerStyle.Width(displayWidth).Render(combinedDisplay))
+
+	if m.previousDisplay == "" {
+		exprLine = "Expr: "
+	}
+
+	separator := lipgloss.NewStyle().Foreground(borderColor).Render(strings.Repeat("─", totalWidth-4))
+	displayContent := lipgloss.JoinVertical(lipgloss.Left,
+		previousDisplayStyle.Render(exprLine),
+		separator,
+		displayStyle.Render(resLine),
+	)
+	b.WriteString(displayContainerStyle.Width(totalWidth).Render(displayContent))
 	b.WriteString("\n\n")
 
 	// Button grid
@@ -397,17 +440,18 @@ func (m model) View() string {
 				style = acButtonStyle
 			} else if val == "=" {
 				style = equalsButtonStyle
+			} else if val == "HONK" {
+				style = honkButtonStyle
 			} else if isOperator(val) {
 				style = operatorButtonStyle
 			} else if val == "+/-" || val == "%" || val == "." {
 				style = functionalButtonStyle
-			} else if val == "0" {
-				style = zeroButtonStyle
-			} else {
+			} else if isNumber(val) {
 				style = numberButtonStyle
+			} else {
+				style = baseButtonStyle // Fallback
 			}
 
-			// Apply feedback
 			if m.pressedX == x && m.pressedY == y {
 				switch m.activationMethod {
 				case activationDirectKeyboard:
@@ -419,24 +463,19 @@ func (m model) View() string {
 				style = highlightStyle.Copy().Width(style.GetWidth())
 			}
 
-			// Wide 0 button - spans 2 button positions (6 + 6 = 12)
-			if val == "0" {
-				style = style.Copy().Width(12)
-			}
-
 			rowButtons = append(rowButtons, style.Render(val))
 		}
-		b.WriteString(lipgloss.JoinHorizontal(lipgloss.Left, rowButtons...))
+		b.WriteString(lipgloss.JoinHorizontal(lipgloss.Center, strings.Join(rowButtons, " ")))
 		b.WriteString("\n")
 	}
 
-	// Help - centered to match button grid width
+	// Help
 	b.WriteString("\n")
 	helpText := lipgloss.NewStyle().
 		Foreground(lipgloss.Color("#95A5A6")).
-		Width(24).
+		Width(totalWidth).
 		Align(lipgloss.Center).
-		Render("Press q or esc to quit")
+		Render("(h for help · q/esc to quit)")
 	b.WriteString(helpText)
 
 	return calculatorBodyStyle.Render(b.String())
