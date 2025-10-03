@@ -148,6 +148,105 @@ Calculator with both enhanced visual feedback AND previous operation display:
 3. If none and no `no-demo-needed` label → fail.
 4. Override allowed by maintainer via label.
 
+## Automated VHS Demo Workflow
+
+### Overview
+The repository includes an automated VHS demo recording workflow (`vhs-demo.yml`) that runs on all pull requests to `main` or `develop` branches.
+
+### Workflow Triggers
+The VHS demo workflow runs when:
+- A pull request is opened or updated
+- Changes affect Go source files (`**.go`)
+- Changes affect tape files (`.tapes/*.tape`)
+- Changes affect Go dependencies (`go.mod`, `go.sum`)
+
+### What the Workflow Does
+1. **Builds the calculator binary** - Ensures the latest code is ready for demo recording
+2. **Discovers all tape files** - Automatically finds all `.tape` files in `.tapes/` directory
+3. **Runs VHS recordings** - Executes all tapes using `@charmbracelet/vhs-action`
+4. **Uploads artifacts** - Stores generated GIFs as workflow artifacts (30-day retention)
+5. **Posts PR comment** - Adds a comment with download links and list of generated demos
+
+### Storage Strategy
+
+**Three-tier storage approach:**
+
+1. **Repository (`.tapes/assets/`)** - Source of truth
+   - All finalized GIFs are committed here
+   - Used in README and documentation
+   - Versioned alongside code changes
+
+2. **Workflow Artifacts** - Temporary validation
+   - Generated on every PR
+   - Available for 30 days
+   - Use for review before committing updates
+
+3. **PR Descriptions** - Reviewer experience
+   - Embed GIFs using GitHub raw URLs
+   - Show Before/After comparisons
+   - Reference committed assets in `.tapes/assets/`
+
+### How to Use Generated Demos
+
+**Step 1: Wait for workflow completion**
+```
+Check the "VHS Demo Recording" workflow status in your PR
+```
+
+**Step 2: Review the PR comment**
+```
+The workflow posts a comment with:
+- Count of generated demos
+- List of all GIF filenames
+- Link to download artifacts
+```
+
+**Step 3: Download and review**
+```
+1. Click the artifact download link in the PR comment
+2. Extract the zip file
+3. Review each GIF for correctness
+4. Verify timing, visual appearance, and behavior
+```
+
+**Step 4: Commit updates (if needed)**
+```bash
+# If demos look good and represent changes
+cp downloaded-gifs/*.gif .tapes/assets/
+git add .tapes/assets/*.gif
+git commit -m "chore: update demo recordings"
+git push
+```
+
+**Step 5: Embed in PR description**
+```markdown
+## Before
+![Before Demo](https://raw.githubusercontent.com/USER/REPO/BRANCH/.tapes/assets/before.gif)
+
+## After
+![After Demo](https://raw.githubusercontent.com/USER/REPO/BRANCH/.tapes/assets/after.gif)
+```
+
+### Best Practices
+
+**When to commit updated GIFs:**
+- Visual behavior has changed
+- New features are demonstrated
+- Bug fixes show corrected behavior
+- Performance improvements are visible
+
+**When NOT to commit:**
+- Pure refactoring (no visual changes)
+- Backend logic changes (no UI impact)
+- Documentation-only updates
+- Use `no-demo-needed` label for such PRs
+
+**Artifact retention:**
+- Artifacts are kept for 30 days
+- Sufficient time for review and iteration
+- Old artifacts are automatically cleaned up
+- Committed GIFs in repo are permanent
+
 ## Future Enhancements
 - Script: `scripts/update-demos.sh`
 - Lint: ensure PR template filled (GitHub Action)

@@ -67,6 +67,7 @@ Key points:
 - Every feature or bug fix starts with an issue.
 - UI or behavior changes require updating/adding a VHS tape and regenerated GIF.
 - PRs must include Before / After GIF sections (or mark Before as N/A).
+- **Automated VHS demo recording** runs on all PRs - see [VHS workflow guide](docs/vhs-workflow.md).
 - See [CONTRIBUTING.md](CONTRIBUTING.md) and detailed [development workflow](docs/development-workflow.md).
 
 If you want to propose a feature, open a *Feature Request* issue (template provided).
