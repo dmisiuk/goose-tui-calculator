@@ -3,6 +3,10 @@ Set FontSize 18
 Set Width 1000
 Set Height 600
 
+Type "go build -o calc cmd/calc/main.go"
+Enter
+Sleep 1500ms
+
 Type "./calc"
 Enter
 Sleep 2000ms
