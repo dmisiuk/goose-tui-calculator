@@ -71,6 +71,17 @@ Key points:
 
 If you want to propose a feature, open a *Feature Request* issue (template provided).
 
+## Automated Demo Generation
+
+This project uses a GitHub Action powered by `vhs` to automatically generate a demo GIF for any changes made to `.tape` files within a pull request.
+
+When you open or update a PR that modifies a tape file, the workflow will:
+1. Build the `calc` application.
+2. Run the `vhs` recorder using the updated `.tape` file.
+3. Upload the resulting GIF as a workflow artifact named `vhs-demo`.
+
+This allows for quick visual feedback on UI and behavior changes directly within the pull request, ensuring that all modifications are clearly demonstrated. You can find the generated demo in the "Artifacts" section of the "Checks" tab on your pull request.
+
 ---
 Visual demos are treated as versioned artifacts to keep reviews fast and transparent.
 See demo history: [docs/demo-history.md](docs/demo-history.md)
