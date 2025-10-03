@@ -369,7 +369,7 @@ func (m model) View() string {
 	var b strings.Builder
 
 	// Logo - match button grid width (4 buttons × 6 chars = 24)
-	b.WriteString(logoStyle.Width(24).Render("  GOOSE  "))
+	b.WriteString(logoStyle.Width(24).Render("🪿 GOOSE 🪿"))
 	b.WriteString("\n\n")
 
 	// Display - width matches 4 buttons at 6 chars each = 24
