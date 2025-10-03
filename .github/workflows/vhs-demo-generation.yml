@@ -46,7 +46,7 @@ jobs:
   generate-demos:
     needs: find-tapes
     if: needs.find-tapes.outputs.tapes != '[]'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         tape: ${{ fromJson(needs.find-tapes.outputs.tapes) }}
@@ -58,7 +58,13 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
-          go-version: "1.23"
+          go-version: "1.24"
+
+      - name: Install dependencies (ffmpeg, ttyd)
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg ttyd
+
+      - name: Install vhs
+        run: go install github.com/charmbracelet/vhs@latest
 
       - name: Build calculator
         run: go build -o calc ./cmd/calculator
@@ -67,9 +73,9 @@ jobs:
         run: mkdir -p .tapes/assets
 
       - name: Generate demo with VHS
-        uses: charmbracelet/vhs-action@v1
-        with:
-          path: ${{ matrix.tape }}
+        run: |
+          export PATH=$(go env GOPATH)/bin:$PATH
+          vhs ${{ matrix.tape }}
 
       - name: Upload demo
         uses: actions/upload-artifact@v4
