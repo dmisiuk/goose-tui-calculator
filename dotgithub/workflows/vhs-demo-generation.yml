@@ -1,0 +1,204 @@
+name: Generate VHS Demos
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.tapes/**'
+      - 'cmd/**'
+      - 'internal/**'
+      - 'go.mod'
+      - 'go.sum'
+  workflow_dispatch:
+    inputs:
+      demo_type:
+        description: 'Type of demo to generate'
+        required: true
+        default: 'changed'
+        type: choice
+        options:
+          - changed
+          - all
+          - basic
+
+jobs:
+  generate-demos:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      actions: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23'
+
+      - name: Setup VHS
+        run: |
+          curl -L https://github.com/charmbracelet/vhs/releases/latest/download/vhs_0.7.1_linux_amd64.tar.gz | tar xz
+          sudo mv vhs /usr/local/bin/
+          vhs version
+
+      - name: Create demo generation script
+        run: |
+          cat > scripts/generate-demos.sh << 'EOF'
+          #!/bin/bash
+          set -e
+
+          # VHS Demo Generation Script
+          # Supports multiple modes: all, changed, basic, pr-summary
+
+          MODE="${1:-changed}"
+          BASE_BRANCH="${2:-main}"
+
+          echo "🎬 VHS Demo Generation Script"
+          echo "Mode: $MODE"
+          echo "Base Branch: $BASE_BRANCH"
+
+          # Create assets directory
+          mkdir -p .tapes/assets
+
+          # Function to generate demo from tape file
+          generate_demo() {
+              local tape_file="$1"
+              local tape_name=$(basename "$tape_file" .tape)
+              local output_file=".tapes/assets/${tape_name}.gif"
+
+              echo "Generating demo: $tape_name"
+
+              if vhs "$tape_file"; then
+                  if [ -f "$output_file" ]; then
+                      local file_size=$(stat -c%s "$output_file" 2>/dev/null || echo "0")
+                      echo "✅ Success: $tape_name (${file_size} bytes)"
+                      return 0
+                  else
+                      echo "❌ Failed: $tape_name (output file not found)"
+                      return 1
+                  fi
+              else
+                  echo "❌ Failed: $tape_name (VHS error)"
+                  return 1
+              fi
+          }
+
+          # Function to get changed tape files
+          get_changed_tapes() {
+              if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+                  # In PR context, get changed files
+                  git diff --name-only origin/$BASE_BRANCH...HEAD | grep '\.tape$' || true
+              else
+                  # In local context, get all tape files
+                  find .tapes -name "*.tape" -type f | sort
+              fi
+          }
+
+          case "$MODE" in
+              "all")
+                  echo "Generating demos for all tape files..."
+                  find .tapes -name "*.tape" -not -path "*/assets/*" | while read -r tape_file; do
+                      generate_demo "$tape_file"
+                  done
+                  ;;
+              "changed")
+                  echo "Generating demos for changed tape files..."
+                  changed_files=$(get_changed_tapes)
+                  if [ -z "$changed_files" ]; then
+                      echo "No changed tape files found. Running basic demo..."
+                      generate_demo ".tapes/calculator-basic.tape"
+                  else
+                      echo "$changed_files" | while read -r tape_file; do
+                          if [ -f "$tape_file" ]; then
+                              generate_demo "$tape_file"
+                          fi
+                      done
+                  fi
+                  ;;
+              "basic")
+                  echo "Generating basic demo..."
+                  generate_demo ".tapes/calculator-basic.tape"
+                  ;;
+              "pr-summary")
+                  echo "Generating PR demo summary..."
+                  changed_files=$(get_changed_tapes)
+                  if [ -z "$changed_files" ]; then
+                      echo "No tape changes detected in this PR."
+                  else
+                      echo "Generated demos for changed tape files:"
+                      echo "$changed_files" | while read -r tape_file; do
+                          if [ -f "$tape_file" ]; then
+                              tape_name=$(basename "$tape_file" .tape)
+                              output_file=".tapes/assets/${tape_name}.gif"
+                              if [ -f "$output_file" ]; then
+                                  file_size=$(stat -c%s "$output_file" 2>/dev/null || echo "0")
+                                  echo "- $tape_name (${file_size} bytes)"
+                              fi
+                          fi
+                      done
+                  fi
+                  ;;
+              *)
+                  echo "Invalid mode: $MODE"
+                  echo "Usage: $0 [all|changed|basic|pr-summary] [base_branch]"
+                  exit 1
+                  ;;
+          esac
+
+          echo "Demo generation completed!"
+          EOF
+
+          chmod +x scripts/generate-demos.sh
+
+      - name: Generate demos
+        run: |
+          mkdir -p scripts
+          DEMO_TYPE="${{ github.event.inputs.demo_type || 'changed' }}"
+          ./scripts/generate-demos.sh "$DEMO_TYPE" "main"
+
+      - name: Upload demo artifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: vhs-demos
+          path: .tapes/assets/
+          retention-days: 30
+
+      - name: Generate PR comment
+        if: github.event_name == 'pull_request'
+        run: |
+          # Generate demo summary for PR comment
+          mkdir -p scripts
+          ./scripts/generate-demos.sh pr-summary main > demo-summary.txt
+
+          # Create PR comment
+          cat > pr-comment.md << 'EOF'
+          ## 🎬 VHS Demo Generation
+
+          <details>
+          <summary>Generated Demos</summary>
+
+          ```
+          EOF
+
+          cat demo-summary.txt >> pr-comment.md
+
+          cat >> pr-comment.md << 'EOF'
+          ```
+
+          </details>
+
+          📁 Demo files are available in the [workflow artifacts](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          EOF
+
+          # Post comment to PR
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            gh pr comment ${{ github.event.number }} --body-file pr-comment.md
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
