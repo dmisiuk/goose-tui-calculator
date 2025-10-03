@@ -52,6 +52,9 @@ Owner: @dmisiuk
 - test-and-verify.yml:
   - Trigger: push + pull_request.
   - Steps: fmt check, vet, unit+integration tests, race detection, run vhs demos, collect coverage, upload to Codecov.
+- vhs-demo.yml:
+  - Trigger: pull_request (on changes to Go files, tape files, or dependencies).
+  - Steps: build binary, run all VHS tapes, upload GIFs as artifacts (30-day retention), post PR comment with download links.
 - release.yml:
   - Trigger: git tag push matching `v*`.
   - Steps: cross-compile (Linux, macOS, Windows; add arm64 where available), attach binaries to GitHub Release, generate checksums.
