@@ -63,13 +63,11 @@ jobs:
       - name: Build calculator
         run: go build -o calc ./cmd/calculator
 
-      - name: Install ffmpeg
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg
+      - name: Create output directory
+        run: mkdir -p .tapes/assets
 
       - name: Generate demo with VHS
-        uses: charmbracelet/vhs-action@v2
+        uses: charmbracelet/vhs-action@v1
         with:
           path: ${{ matrix.tape }}
 
