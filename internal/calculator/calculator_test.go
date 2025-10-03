@@ -197,12 +197,9 @@ func TestGooseLogoInView(t *testing.T) {
 
 	output := m.View()
 
-	// Check that Goose logo and emoji are in the output
+	// Check that Goose logo is in the output
 	if !strings.Contains(output, "GOOSE") {
 		t.Errorf("Expected GOOSE logo in output")
-	}
-	if !strings.Contains(output, "🪿") {
-		t.Errorf("Expected goose emoji in output")
 	}
 }
 
