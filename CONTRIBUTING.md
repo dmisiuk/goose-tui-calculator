@@ -109,6 +109,30 @@ Current CI runs:
 - VHS tape(s)
 Future enhancements may add: race detector, coverage upload, lint, demo enforcement script.
 
+### Automated VHS Demo Recording on Pull Requests
+Pull requests automatically trigger VHS demo recording via the `vhs-demo.yml` workflow:
+
+**What happens automatically:**
+- All `.tape` files in `.tapes/` are executed
+- Generated GIFs are uploaded as workflow artifacts (retained for 30 days)
+- A comment is posted to the PR with artifact download link and list of generated demos
+
+**How to use the generated demos:**
+1. Wait for the VHS Demo Recording workflow to complete
+2. Download the `vhs-demo-recordings` artifact from the workflow run
+3. Review the generated GIFs to verify visual correctness
+4. If updates are needed, commit the updated GIFs to `.tapes/assets/` in your PR branch
+5. Include the relevant GIFs in your PR description using the Before/After format
+
+**Storage location for demo files:**
+- **Source of truth (committed):** `.tapes/assets/*.gif` - These GIFs are committed to the repository
+- **Temporary artifacts:** Workflow artifacts are available for 30 days for review before committing
+- **PR review:** Use GitHub raw URLs for embedding GIFs in PR descriptions
+
+**When the workflow runs:**
+- Triggered on: Pull requests to `main` or `develop` branches
+- Conditions: Changes to `*.go` files, `.tapes/*.tape` files, or Go dependencies
+
 ## Demo Enforcement (Planned Option)
 A CI script may fail PRs if Go code changes without `.tapes/` modifications (unless labeled `no-demo-needed`). Contributors should assume enforcement even if not yet active.
 

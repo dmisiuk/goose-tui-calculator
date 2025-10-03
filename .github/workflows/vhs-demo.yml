@@ -1,0 +1,94 @@
+name: VHS Demo Recording
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - '**.go'
+      - '.tapes/*.tape'
+      - 'go.mod'
+      - 'go.sum'
+
+jobs:
+  record-demos:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24'
+
+      - name: Build calculator binary
+        run: go build -o calc ./cmd/calculator
+
+      - name: Find all tape files
+        id: find_tapes
+        run: |
+          echo "Discovering tape files in .tapes/"
+          tapes=$(find .tapes -maxdepth 1 -name "*.tape" -type f | sort)
+          echo "$tapes"
+          echo "tape_count=$(echo "$tapes" | wc -l)" >> $GITHUB_OUTPUT
+
+      - name: Run VHS demo recordings
+        uses: charmbracelet/vhs-action@v2
+        with:
+          path: ".tapes/*.tape"
+          install-fonts: true
+
+      - name: List generated GIFs
+        run: |
+          echo "Generated GIFs:"
+          ls -lh .tapes/assets/*.gif || echo "No GIFs found in assets directory"
+          
+      - name: Upload demo recordings as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vhs-demo-recordings
+          path: .tapes/assets/*.gif
+          retention-days: 30
+
+      - name: Comment PR with demo info
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Find all generated GIFs
+            const assetsDir = '.tapes/assets';
+            let gifFiles = [];
+            try {
+              gifFiles = fs.readdirSync(assetsDir).filter(f => f.endsWith('.gif'));
+            } catch (e) {
+              console.log('No GIFs found');
+            }
+            
+            const artifactUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            
+            let body = `## 🎬 VHS Demo Recordings Generated\n\n`;
+            body += `**Total demos recorded:** ${gifFiles.length}\n\n`;
+            body += `📦 **Download artifacts:** [vhs-demo-recordings](${artifactUrl})\n\n`;
+            
+            if (gifFiles.length > 0) {
+              body += `### Generated demos:\n`;
+              gifFiles.forEach(gif => {
+                body += `- \`${gif}\`\n`;
+              });
+            }
+            
+            body += `\n---\n`;
+            body += `*Demo recordings are stored as workflow artifacts for 30 days.*\n`;
+            body += `*To use these in the PR description, download and commit them to the repository.*`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
