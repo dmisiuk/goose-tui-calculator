@@ -117,13 +117,13 @@ jobs:
               return name;
             });
 
-            let body = `## 🎬 VHS Demo Generation\n\n`;
-            body += `Generated ${gifs.length} demo(s):\n\n`;
+            let body = `## 🎬 Generated VHS Demos\n\n`;
 
             gifs.forEach(gif => {
               const url = `https://raw.githubusercontent.com/${{ github.repository }}/${{ github.head_ref }}/.tapes/assets/${gif}`;
-              body += `### ${gif}\n`;
-              body += `![${gif}](${url})\n\n`;
+              const title = gif.replace('.gif', '').replace(/-/g, ' ');
+              body += `### ${title}\n\n`;
+              body += `[![${gif}](${url})](${url})\n\n`;
             });
 
             github.rest.issues.createComment({
