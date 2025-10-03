@@ -67,8 +67,13 @@ jobs:
       - name: Build calculator
         run: go build -o calc ./cmd/calculator
 
+      - name: Setup FFmpeg
+        uses: AnimMouse/setup-ffmpeg@v1
+
       - name: Generate demo with VHS
-        run: docker run --rm -v $PWD:/vhs ghcr.io/charmbracelet/vhs ${{ matrix.tape }}
+        uses: charmbracelet/vhs-action@v1
+        with:
+          path: ${{ matrix.tape }}
 
       - name: Commit generated GIF
         uses: stefanzweifel/git-auto-commit-action@v4
