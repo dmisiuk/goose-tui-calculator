@@ -71,6 +71,22 @@ Key points:
 
 If you want to propose a feature, open a *Feature Request* issue (template provided).
 
+## Claude Integration
+
+This repository is integrated with the Anthropic Claude code assistant using the Z.ai provider. Claude can be triggered to help with development tasks such as fixing bugs or implementing new features.
+
+### How to Use
+
+To trigger the Claude agent, you can use one of the following methods:
+
+1.  **Create an issue with the `claude` label:** When you create a new issue, add the `claude` label to it.
+2.  **Assign an issue to `claude-bot`:** Assign an existing issue to the user `claude-bot`.
+3.  **Mention `@claude` in a comment:** In any issue or pull request, create a comment that starts with `@claude`.
+
+### Configuration
+
+For the Claude integration to work, a `ZAI_API_KEY` secret must be configured in the repository's settings. This secret should contain a valid API key from Z.ai.
+
 ---
 Visual demos are treated as versioned artifacts to keep reviews fast and transparent.
 See demo history: [docs/demo-history.md](docs/demo-history.md)
