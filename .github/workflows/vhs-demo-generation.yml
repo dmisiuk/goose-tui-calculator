@@ -4,11 +4,11 @@ on:
   pull_request:
     types: [opened, synchronize]
     paths:
-      - "'.tapes/**"'
-      - "'cmd/**"'
-      - "'internal/**"'
-      - "'go.mod"'
-      - "'go.sum"'
+      - .tapes/**
+      - cmd/**
+      - internal/**
+      - go.mod
+      - go.sum
   workflow_dispatch:
 
 jobs:
