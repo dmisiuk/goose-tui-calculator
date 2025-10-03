@@ -35,10 +35,14 @@ jobs:
       - name: Vet code
         run: go vet ./...
 
-      - name: Install vhs
-        run: go install github.com/charmbracelet/vhs@latest
+      - name: Render calculator demo (VHS)
+        uses: charmbracelet/vhs-action@v2
+        with:
+          path: '.tapes/calculator.tape'
 
-      - name: Run calculator demo tape
-        run: |
-          export PATH=$(go env GOPATH)/bin:$PATH
-          vhs .tapes/calculator.tape
+      - name: Upload VHS demo artifact
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: vhs-demos
+          path: .tapes/assets/*.gif

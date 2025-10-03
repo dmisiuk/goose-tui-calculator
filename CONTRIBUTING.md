@@ -20,7 +20,7 @@ go test ./...
 2. Create a branch using naming convention (see below).
 3. Implement code + tests.
 4. Update or add a VHS tape (.tapes/*.tape) if user-visible behavior changes.
-5. Regenerate GIF(s) into `.tapes/assets/`.
+5. Regenerate GIF(s) into `.tapes/assets/` (locally or by downloading the `vhs-demos` CI artifact).
 6. Open a Pull Request:
    - Reference the issue (e.g., `Closes #42`).
    - Include Before / After GIF sections (or mark N/A).
@@ -67,6 +67,7 @@ We treat **demos as versioned artifacts**:
 - Scripts live in `.tapes/*.tape`
 - Generated GIFs in `.tapes/assets/*.gif`
 - At least one baseline tape must always run in CI (e.g., `calculator-basic.tape`).
+- Every pull request automatically re-renders `.tapes/calculator.tape` via `@charmbracelet/vhs-action` and uploads the GIF bundle as the `vhs-demos` workflow artifact for reviewers.
 - Any UI/behavior change MUST:
   - Update an existing tape OR add a new one.
   - Regenerate affected GIF(s).
@@ -106,7 +107,7 @@ Result GIF will appear (by default) in working directory or specified path—mov
 Current CI runs:
 - Build & test
 - Vet
-- VHS tape(s)
+- VHS tape(s) rendered via `@charmbracelet/vhs-action` with artifacts attached to pull requests
 Future enhancements may add: race detector, coverage upload, lint, demo enforcement script.
 
 ## Demo Enforcement (Planned Option)

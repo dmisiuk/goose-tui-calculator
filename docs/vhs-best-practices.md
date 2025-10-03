@@ -114,3 +114,4 @@ Always test locally before committing:
 vhs .tapes/your-tape.tape
 # Verify GIF shows correct behavior
 ```
+During pull request reviews the **Test and Verify** workflow reruns `.tapes/calculator.tape` via `@charmbracelet/vhs-action` and uploads the output GIFs as the `vhs-demos` artifact so reviewers can grab the latest render.

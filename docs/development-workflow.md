@@ -11,7 +11,7 @@ Demos are **first-class artifacts**. A pull request should let a reviewer *see* 
 3. **Branch created** (`feature/<short-name>`, `bugfix/<short-name>`).
 4. **Implementation with tests**.
 5. **Demo script updated or created** (VHS).
-6. **GIF(s) regenerated**.
+6. **GIF(s) regenerated** (locally or retrieved from the `vhs-demos` CI artifact).
 7. **Documentation updated** (README.md, demo-history.md).
 8. **PR opened** with Before / After visual evidence and reference to Issue.
 9. Review / refine.
@@ -98,6 +98,13 @@ done
 mv ./*.gif .tapes/assets/ 2>/dev/null || true
 ```
 A future helper script may formalize this.
+
+## CI-rendered demo artifacts
+
+- Every pull request triggers `@charmbracelet/vhs-action` against `.tapes/calculator.tape` inside the **Test and Verify** workflow.
+- Generated GIFs in `.tapes/assets/` are uploaded automatically as the `vhs-demos` artifact when the workflow runs on pull requests.
+- Reviewers and contributors can download the artifact from the workflow run page to obtain the freshly rendered demo without rebuilding locally.
+- Artifacts follow the default GitHub retention policy (currently 90 days); commit the GIF to the repository if you need a permanent record.
 
 ## Pull Request Visual Sections
 
