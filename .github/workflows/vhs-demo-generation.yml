@@ -99,35 +99,30 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
-      - name: Find generated demos
-        id: demos
-        run: |
-          demos=$(find .tapes/assets -name "*.gif" -type f | sort)
-          if [ -z "$demos" ]; then
-            echo "files=" >> $GITHUB_OUTPUT
-          else
-            files=$(echo "$demos" | xargs -I {} basename {} | jq -R -s -c 'split("\n")[:-1]')
-            echo "files=$files" >> $GITHUB_OUTPUT
-          fi
-
       - name: Comment on PR
         uses: actions/github-script@v7
         with:
           script: |
-            const files = ${{ steps.demos.outputs.files || '[]' }};
+            const tapes = ${{ needs.find-tapes.outputs.tapes }};
 
-            if (files.length === 0) {
-              console.log('No demo files found');
+            if (!tapes || tapes.length === 0) {
+              console.log('No tape files found');
               return;
             }
 
-            let body = `## 🎬 VHS Demo Generation\n\n`;
-            body += `Generated ${files.length} demo(s) from changed/new tape files:\n\n`;
+            // Convert tape paths to GIF filenames
+            const gifs = tapes.map(tape => {
+              const name = tape.replace('.tapes/', '').replace('.tape', '.gif');
+              return name;
+            });
 
-            files.forEach(file => {
-              const path = `.tapes/assets/${file}`;
-              body += `### ${file}\n`;
-              body += `![${file}](${path})\n\n`;
+            let body = `## 🎬 VHS Demo Generation\n\n`;
+            body += `Generated ${gifs.length} demo(s):\n\n`;
+
+            gifs.forEach(gif => {
+              const url = `https://raw.githubusercontent.com/${{ github.repository }}/${{ github.head_ref }}/.tapes/assets/${gif}`;
+              body += `### ${gif}\n`;
+              body += `![${gif}](${url})\n\n`;
             });
 
             github.rest.issues.createComment({
