@@ -46,7 +46,7 @@ jobs:
   generate-demos:
     needs: find-tapes
     if: needs.find-tapes.outputs.tapes != '[]'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         tape: ${{ fromJson(needs.find-tapes.outputs.tapes) }}
