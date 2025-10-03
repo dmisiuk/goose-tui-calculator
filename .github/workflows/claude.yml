@@ -1,0 +1,43 @@
+name: Claude
+
+on:
+  issue_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  claude:
+    name: "Claude Code Assistant"
+    runs-on: ubuntu-latest
+    if: |
+      (
+        github.event_name == 'issues' &&
+        (
+          (github.event.action == 'opened' && contains(github.event.issue.labels.*.name, 'claude')) ||
+          (github.event.action == 'assigned' && github.event.assignee.login == 'claude-bot')
+        )
+      ) ||
+      (
+        github.event_name == 'issue_comment' &&
+        startsWith(github.event.comment.body, '@claude')
+      )
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run Claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ZAI_API_KEY }}
+          anthropic_base_url: https://api.z.ai/api/anthropic
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          claude_args: |
+            --repo ${{ github.repository }}
+            --issue-number ${{ github.event.issue.number }}
+            --github-token ${{ secrets.GITHUB_TOKEN }}
