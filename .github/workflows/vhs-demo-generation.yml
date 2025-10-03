@@ -68,9 +68,7 @@ jobs:
         run: go build -o calc ./cmd/calculator
 
       - name: Generate demo with VHS
-        uses: charmbracelet/vhs-action@v1
-        with:
-          path: ${{ matrix.tape }}
+        run: docker run --rm -v $PWD:/vhs ghcr.io/charmbracelet/vhs ${{ matrix.tape }}
 
       - name: Commit generated GIF
         uses: stefanzweifel/git-auto-commit-action@v4
