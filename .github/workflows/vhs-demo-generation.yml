@@ -4,11 +4,11 @@ on:
   pull_request:
     types: [opened, synchronize]
     paths:
-      - ".tapes/**"
-      - "cmd/**"
-      - "internal/**"
-      - "go.mod"
-      - "go.sum"
+      - "'.tapes/**"'
+      - "'cmd/**"'
+      - "'internal/**"'
+      - "'go.mod"'
+      - "'go.sum"'
   workflow_dispatch:
 
 jobs:
@@ -22,6 +22,7 @@ jobs:
         with:
           fetch-depth: 0
 
+
       - name: Find changed/new tape files
         id: find
         run: |
@@ -32,6 +33,7 @@ jobs:
             # For workflow_dispatch, get all tape files
             tapes=$(find .tapes -name "*.tape" -not -path "*/assets/*" -type f)
           fi
+
 
           if [ -z "$tapes" ]; then
             echo "tapes=[]" >> $GITHUB_OUTPUT
@@ -53,6 +55,7 @@ jobs:
       matrix:
         tape: ${{ fromJson(needs.find-tapes.outputs.tapes) }}
 
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -62,13 +65,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
-          go-version: "1.24"
-
-      - name: Install dependencies (ffmpeg, ttyd)
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg ttyd
-
-      - name: Install vhs
-        run: go install github.com/charmbracelet/vhs@latest
+          go-version: "'1.24"'
 
       - name: Build calculator
         run: go build -o calc ./cmd/calculator
@@ -77,15 +74,15 @@ jobs:
         run: mkdir -p .tapes/assets
 
       - name: Generate demo with VHS
-        run: |
-          export PATH=$(go env GOPATH)/bin:$PATH
-          vhs ${{ matrix.tape }}
+        uses: stefanzweifelcharmbracelet/gitvhs-auto-commit-actionaction@v5v2
+        with:
+          path: ${{ matrix.tape }}
 
       - name: Commit generated GIF
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Update VHS demo for ${{ matrix.tape }}"
-          file_pattern: ".tapes/assets/*.gif"
+          file_pattern: '.tapes/assets/*.gif'
           commit_user_name: vhs-action 📼
           commit_user_email: actions@github.com
           commit_author: vhs-action 📼 <actions@github.com>
@@ -97,10 +94,23 @@ jobs:
     permissions:
       pull-requests: write
 
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: CheckoutCheckout
+        uses: actions/checkoutcheckout@v4
         with:
+          ref: ${{ github.head_ref }}
+
+      - name: Find generated demos
+        id: demos
+        run: |
+          demos=$(find .tapes/assets -name "*.gif" -type f | sort)
+          if [ -z "$demos" ]; then
+            echo "files=" >> $GITHUB_OUTPUT
+          else
+            files=$(echo "$demos" | xargs -I {} basename {} | jq -R -s -c 'split("\n")[:-1]')
+            echo "files=$files" >> $GITHUB_OUTPUT
+          fi
           ref: ${{ github.head_ref }}
 
       - name: Find generated demos
@@ -120,10 +130,23 @@ jobs:
           script: |
             const files = ${{ steps.demos.outputs.files || '[]' }};
 
-            if (files.length === 0) {
-              console.log('No demo files found');
+
+
+            if (filesfiles.length === 0)length === 0) {
+              console.log('No demo files foundfound');
+              return;
               return;
             }
+
+            let body = `## 🎬 VHS Demo Generation\n\n`;
+            body += `Generated ${files.length} demo(s) from changed/new tape files:\n\n`;
+
+            files.forEach(file => {
+              const path = `.tapes/assets/${file}`;
+              body += `### ${file}\n`;
+              body += `![${file}](${path})\n\n`;
+            });
+
 
             let body = `## 🎬 VHS Demo Generation\n\n`;
             body += `Generated ${files.length} demo(s) from changed/new tape files:\n\n`;
