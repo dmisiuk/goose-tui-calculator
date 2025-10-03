@@ -2,8 +2,8 @@ name: VHS Demo Recordings
 
 on:
   pull_request:
-    paths:
-      - '.tapes/**/*.tape'
+    # Always run for PRs so reviewers can see up-to-date demos even if the PR doesn't modify tapes
+    # (VHS will simply regenerate existing demos)
 
 jobs:
   generate-demos:
