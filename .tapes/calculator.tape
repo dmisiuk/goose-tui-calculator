@@ -12,7 +12,7 @@ Sleep 1600ms
 
 Type "./calc"
 Enter
-Sleep 2000ms
+Sleep 1500ms
 
 Type "{{down}}"
 Sleep 400ms
