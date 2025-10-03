@@ -103,31 +103,59 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
+      - name: Get commit SHA
+        id: sha
+        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Read tape output paths
+        id: outputs
+        run: |
+          tapes='${{ needs.find-tapes.outputs.tapes }}'
+          outputs="["
+          first=true
+          echo "$tapes" | jq -r '.[]' | while read tape; do
+            if [ -f "$tape" ]; then
+              output=$(grep "^Output" "$tape" | head -1 | awk '{print $2}')
+              if [ ! -z "$output" ]; then
+                if [ "$first" = false ]; then
+                  outputs="${outputs},"
+                fi
+                outputs="${outputs}\"${output}\""
+                first=false
+              fi
+            fi
+          done
+          outputs="${outputs}]"
+          echo "paths=$outputs" >> $GITHUB_OUTPUT
+
       - name: Comment on PR
         uses: actions/github-script@v7
         with:
           script: |
+            const fs = require('fs');
             const tapes = ${{ needs.find-tapes.outputs.tapes }};
+            const sha = '${{ steps.sha.outputs.sha }}';
 
             if (!tapes || tapes.length === 0) {
               console.log('No tape files found');
               return;
             }
 
-            // Convert tape paths to GIF filenames
-            const gifs = tapes.map(tape => {
-              const name = tape.replace('.tapes/', '').replace('.tape', '.gif');
-              return name;
-            });
-
             let body = `## 🎬 Generated VHS Demos\n\n`;
 
-            gifs.forEach(gif => {
-              const url = `https://raw.githubusercontent.com/${{ github.repository }}/${{ github.head_ref }}/.tapes/assets/${gif}`;
-              const title = gif.replace('.gif', '').replace(/-/g, ' ');
-              body += `### ${title}\n\n`;
-              body += `[![${gif}](${url})](${url})\n\n`;
-            });
+            for (const tape of tapes) {
+              const content = fs.readFileSync(tape, 'utf8');
+              const outputMatch = content.match(/^Output\s+(.+)$/m);
+
+              if (outputMatch) {
+                const outputPath = outputMatch[1];
+                const gifName = outputPath.split('/').pop();
+                const url = `https://raw.githubusercontent.com/${{ github.repository }}/${sha}/${outputPath}`;
+                const title = gifName.replace('.gif', '').replace(/-/g, ' ');
+                body += `### ${title}\n\n`;
+                body += `[![${gifName}](${url})](${url})\n\n`;
+              }
+            }
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
