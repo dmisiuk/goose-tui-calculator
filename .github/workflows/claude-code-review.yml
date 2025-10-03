@@ -15,8 +15,7 @@ jobs:
        contains(github.event.comment.body, '@claude')) ||
       (github.event_name == 'pull_request' &&
        (contains(github.event.pull_request.body, '@claude') ||
-        (github.event.action == 'labeled' && github.event.label.name == 'claude') ||
-        contains(toJSON(github.event.pull_request.requested_reviewers.*.login), 'claude')))
+        (github.event.action == 'labeled' && github.event.label.name == 'claude')))
 
     runs-on: ubuntu-latest
     permissions:
