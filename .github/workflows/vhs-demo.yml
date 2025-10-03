@@ -1,0 +1,82 @@
+name: VHS Demo Recording
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - '**.go'
+      - '.tapes/**'
+      - 'cmd/**'
+      - 'internal/**'
+
+jobs:
+  generate-demos:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24'
+
+      - name: Build calculator
+        run: go build -o calc ./cmd/calculator
+
+      - name: Generate VHS demos
+        uses: charmbracelet/vhs-action@v2
+        with:
+          path: ".tapes"
+          install-fonts: true
+
+      - name: Upload demo artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vhs-demos
+          path: .tapes/assets/*.gif
+          retention-days: 30
+
+      - name: Comment PR with demo info
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Find all generated GIFs
+            const assetsDir = '.tapes/assets';
+            let gifFiles = [];
+            try {
+              gifFiles = fs.readdirSync(assetsDir)
+                .filter(file => file.endsWith('.gif'))
+                .map(file => file);
+            } catch (err) {
+              console.log('No GIF files found or directory does not exist');
+            }
+            
+            const comment = `### 🎬 VHS Demo Recording Complete
+            
+            Demos have been automatically generated for this PR.
+            
+            **Generated demos:** ${gifFiles.length} file(s)
+            ${gifFiles.map(f => `- \`${f}\``).join('\n')}
+            
+            **Download artifacts:** You can download the generated demo GIFs from the [Actions artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}).
+            
+            **Review checklist:**
+            - [ ] Verify demo accurately represents the changes
+            - [ ] Check that timing and interactions are smooth
+            - [ ] Ensure visual quality is appropriate
+            
+            > 📝 If the demos look good, commit them to the PR by downloading from artifacts and placing them in \`.tapes/assets/\`
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
