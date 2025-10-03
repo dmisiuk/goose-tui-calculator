@@ -44,9 +44,14 @@ jobs:
           # This prompt tells Claude what to do when working on an issue
           prompt: |
             When asked to work on an issue, please:
-            1. Create a new branch from the default branch, naming it according to the issue (e.g., issue-${{ github.event.issue.number }}-short-description).
+            1. Create a new branch from the default branch, naming it according to the issue (e.g., issue-${{ github.event.issue.number }}-short-description). Use lowercase and hyphens for branch names.
             2. Make the required changes/fixes as described in the issue.
-            3. Open a pull request from the new branch to the default branch, referencing the issue in the PR description.
+            3. Open a pull request from the new branch to the default branch, referencing the issue in the PR description using "Fixes #${{ github.event.issue.number }}".
             4. Add a summary of changes in the PR description.
+
+            Error Handling:
+            - If you encounter test failures, fix them before creating the PR.
+            - If changes conflict with the target branch, resolve conflicts before pushing.
+            - If you cannot complete the task, add a comment to the issue explaining the blocker.
 
           claude_args: "--model glm-4.6"
