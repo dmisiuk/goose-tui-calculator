@@ -4,17 +4,17 @@ on:
   pull_request:
     types: [opened, synchronize]
     paths:
-      - '.tapes/**'
-      - 'cmd/**'
-      - 'internal/**'
-      - 'go.mod'
-      - 'go.sum'
+      - ".tapes/**"
+      - "cmd/**"
+      - "internal/**"
+      - "go.mod"
+      - "go.sum"
   workflow_dispatch:
     inputs:
       demo_type:
-        description: 'Type of demo to generate'
+        description: "Type of demo to generate"
         required: true
-        default: 'changed'
+        default: "changed"
         type: choice
         options:
           - changed
@@ -38,7 +38,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.23'
+          go-version: "1.23"
 
       - name: Setup VHS
         run: |
@@ -162,7 +162,7 @@ jobs:
           ./scripts/generate-demos.sh "$DEMO_TYPE" "main"
 
       - name: Upload demo artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: vhs-demos
