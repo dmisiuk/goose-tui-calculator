@@ -21,14 +21,20 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const { data: { permission } } = await github.rest.repos.getCollaboratorPermissionLevel({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              username: context.actor
-            });
-            if (['admin', 'write'].includes(permission)) {
-              core.setOutput('is_authorized', 'true');
-            } else {
+            try {
+              const { data: { permission } } = await github.rest.repos.getCollaboratorPermissionLevel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                username: context.actor
+              });
+              if (['admin', 'write'].includes(permission)) {
+                core.setOutput('is_authorized', 'true');
+              } else {
+                core.setOutput('is_authorized', 'false');
+              }
+            } catch (error) {
+              // If actor is a bot or not found, deny authorization
+              console.log(`Permission check failed for ${context.actor}: ${error.message}`);
               core.setOutput('is_authorized', 'false');
             }
 
