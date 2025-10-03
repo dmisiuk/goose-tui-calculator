@@ -66,6 +66,7 @@ We follow an **Issue → Branch → Code + Tests → VHS Demo → PR** workflow.
 Key points:
 - Every feature or bug fix starts with an issue.
 - UI or behavior changes require updating/adding a VHS tape and regenerated GIF.
+- PRs automatically generate demo recordings via VHS action - download and commit approved demos.
 - PRs must include Before / After GIF sections (or mark Before as N/A).
 - See [CONTRIBUTING.md](CONTRIBUTING.md) and detailed [development workflow](docs/development-workflow.md).
 
