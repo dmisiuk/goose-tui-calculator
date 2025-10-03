@@ -108,6 +108,7 @@ Current CI runs:
 - Vet
 - VHS tape(s)
 Future enhancements may add: race detector, coverage upload, lint, demo enforcement script.
+- CI now runs `vhs-demos.yml`, which executes all `.tapes/*.tape` via the official action and uploads the resulting GIFs as workflow artifacts. Reviewers can download or preview these without checking out code.
 
 ## Demo Enforcement (Planned Option)
 A CI script may fail PRs if Go code changes without `.tapes/` modifications (unless labeled `no-demo-needed`). Contributors should assume enforcement even if not yet active.

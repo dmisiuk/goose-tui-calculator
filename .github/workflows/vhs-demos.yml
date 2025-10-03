@@ -1,0 +1,36 @@
+name: VHS Demo Recording
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    # Run if Go/UI code or tape scripts change
+    paths:
+      - '**.go'
+      - '.tapes/**/*.tape'
+      - 'cmd/**'
+      - 'internal/**'
+
+jobs:
+  vhs-demos:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read  # required by actions/checkout
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      # Run Charmbracelet VHS Action on every tape inside .tapes/
+      - name: Generate VHS demos
+        uses: charmbracelet/vhs-action@v2
+        with:
+          path: '.tapes'
+
+      # Upload generated GIFs for reviewer download / preview
+      - name: Upload VHS artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: vhs-demos
+          path: .tapes/assets/*.gif
+          retention-days: 14

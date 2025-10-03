@@ -186,3 +186,4 @@ Calculator with both enhanced visual feedback AND previous operation display:
 
 ---
 This workflow ensures every behavioral change is testable *and* reviewable visually.
+At the end of the **CI** phase, a dedicated workflow (`vhs-demos.yml`) now runs [@charmbracelet/vhs-action](https://github.com/charmbracelet/vhs-action) on **every** `.tape` script found in `.tapes/`. The generated GIFs are uploaded as workflow artifacts (retained for 14 days) so reviewers can preview or download them directly from the PR **Actions** tab.
