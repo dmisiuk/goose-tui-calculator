@@ -72,6 +72,19 @@ We treat **demos as versioned artifacts**:
   - Regenerate affected GIF(s).
   - Embed GIF(s) in PR (Before / After). If no prior behavior existed, label Before: N/A.
 
+### Automated Demo Generation (VHS Action)
+When you open a pull request that includes changes to Go code or VHS tapes:
+- **Automatic recording**: The `vhs-demo.yml` workflow automatically generates demo GIFs using [@charmbracelet/vhs-action](https://github.com/charmbracelet/vhs-action)
+- **Demo artifacts**: Generated GIFs are uploaded as GitHub Actions artifacts (retained for 30 days)
+- **PR comment**: A bot comment will appear with details about generated demos and a download link
+- **Storage location**: Download the artifacts and commit approved demos to `.tapes/assets/` in your PR
+
+**How to use automated demos:**
+1. Open your PR - demos generate automatically
+2. Wait for the "VHS Demo Recording" workflow to complete
+3. Review the demo artifacts in the Actions tab or via the PR comment link
+4. Download and commit demos you want to include in the PR
+
 ### Creating / Updating a Tape
 Example basic tape (`.tapes/calculator-basic.tape`):
 ```
