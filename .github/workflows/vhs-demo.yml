@@ -1,0 +1,28 @@
+name: VHS Demo Recordings
+
+on:
+  pull_request:
+    paths:
+      - '.tapes/**/*.tape'
+
+jobs:
+  generate-demos:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate demo recordings
+        uses: charmbracelet/vhs-action@v2
+        with:
+          # Run all tape files inside the .tapes directory
+          path: '.tapes'
+
+      - name: Upload generated GIFs as artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vhs-demos
+          path: |
+            .tapes/**/*.gif

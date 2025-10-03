@@ -104,9 +104,11 @@ Result GIF will appear (by default) in working directory or specified path—mov
 
 ## CI Expectations
 Current CI runs:
-- Build & test
-- Vet
-- VHS tape(s)
+* Build & test
+* Vet
+* VHS tape(s)
+* VHS demo artifact generation (`vhs-demo.yml`) – runs `@charmbracelet/vhs-action` on pull requests that modify `.tapes` and uploads generated GIFs as the `vhs-demos` artifact for reviewers. Generated files are not committed automatically; contributors should still commit updated GIFs in `.tapes/assets/` when they are final.
+
 Future enhancements may add: race detector, coverage upload, lint, demo enforcement script.
 
 ## Demo Enforcement (Planned Option)

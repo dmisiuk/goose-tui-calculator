@@ -186,3 +186,8 @@ Calculator with both enhanced visual feedback AND previous operation display:
 
 ---
 This workflow ensures every behavioral change is testable *and* reviewable visually.
+
+## CI Expectations
+-- VHS tape(s)
+Future enhancements may add: race detector, coverage upload, lint, demo enforcement script.
+-- VHS demo artifact generation (workflow `vhs-demo.yml`) – automatically runs `@charmbracelet/vhs-action` on pull requests that change `.tape` files and uploads generated GIFs as the `vhs-demos` artifact for reviewers. **Note:** GIFs are _not_ committed back to the branch by CI; contributors remain responsible for committing updated GIFs in `.tapes/assets/`.
