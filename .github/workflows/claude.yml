@@ -38,14 +38,15 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ZAI_API_KEY }}
 
-          # This is an optional setting that allows Claude to read CI results on PRs
           additional_permissions: |
             actions: read
 
-          # Optional: Give a custom prompt to Claude. If this is not specified, Claude will perform the instructions specified in the comment that tagged it.
-          # prompt: 'Update the pull request description to include a summary of changes.'
+          # This prompt tells Claude what to do when working on an issue
+          prompt: |
+            When asked to work on an issue, please:
+            1. Create a new branch from the default branch, naming it according to the issue (e.g., issue-${{ github.event.issue.number }}-short-description).
+            2. Make the required changes/fixes as described in the issue.
+            3. Open a pull request from the new branch to the default branch, referencing the issue in the PR description.
+            4. Add a summary of changes in the PR description.
 
-          # Optional: Add claude_args to customize behavior and configuration
-          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-          # or https://docs.claude.com/en/docs/claude-code/sdk#command-line for available options
           claude_args: "--model glm-4.6"
