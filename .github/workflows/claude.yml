@@ -43,15 +43,20 @@ jobs:
 
           # This prompt tells Claude what to do when working on an issue
           prompt: |
-            When asked to work on an issue, please:
+            When asked to work on an issue, you have full write access to the repository. Please proceed automatically without asking for permission:
+
             1. Create a new branch from the default branch, naming it according to the issue (e.g., issue-123-short-description). Use lowercase and hyphens for branch names.
-            2. Make the required changes/fixes as described in the issue.
-            3. Open a pull request from the new branch to the default branch, referencing the issue in the PR description using "Fixes #<issue-number>".
-            4. Add a summary of changes in the PR description.
+            2. Make all required code changes/fixes as described in the issue. You have permission to edit, create, and modify files.
+            3. Commit your changes with clear commit messages.
+            4. Push the branch to the repository.
+            5. Open a pull request from the new branch to the default branch, referencing the issue in the PR description using "Fixes #<issue-number>".
+            6. Add a summary of changes in the PR description.
 
             Error Handling:
             - If you encounter test failures, fix them before creating the PR.
             - If changes conflict with the target branch, resolve conflicts before pushing.
             - If you cannot complete the task, add a comment to the issue explaining the blocker.
+
+            Important: You have full repository write permissions. Do not ask for permission to edit files - proceed with implementing the changes directly.
 
           claude_args: "--model glm-4.6"
