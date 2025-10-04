@@ -1,10 +1,15 @@
 Output .tapes/assets/calculator-basic.gif
-Set FontSize 18
-Set Width 1000
-Set Height 700
+Output .tapes/golden/calculator-basic.txt
 
+Set FontSize 18
+Set Width 1200
+Set Height 800
+
+# Force colors in CI environments
 Env TERM xterm-256color
 Env COLORTERM truecolor
+Env CLICOLOR_FORCE 1
+Env FORCE_COLOR 1
 
 # Pre-build binary for stability (cold compile can be slow on CI)
 Type "go build -o calc ./cmd/calculator"

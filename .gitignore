@@ -12,6 +12,9 @@ bin/
 .idea/
 .DS_Store
 
-# Ignore binary calc and calculator
-calc
-calculator
+# Ignore binary calc and calculator executables in root
+/calc
+/calculator
+
+# Generated GIF files (keep golden test files)
+.tapes/assets/*.gif

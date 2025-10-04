@@ -72,6 +72,53 @@ An initial requirements and scope document is maintained in [docs/requirements.m
 
 Issue tracking the requirements document: See Issue #4.
 
+## Testing
+
+This project uses a comprehensive golden test framework to validate UI consistency and prevent regressions.
+
+### Running Tests
+
+```bash
+# Run all tests (unit + integration)
+make test
+
+# Run unit tests only
+make test-unit
+
+# Run VHS integration tests (requires VHS installed)
+make test-integration
+
+# Update golden files after intentional UI changes
+make test-update-golden
+```
+
+### Test Framework
+
+- **Unit Tests**: Test calculator logic and UI rendering with golden file validation
+- **Integration Tests**: Validate VHS demo recordings for visual regressions
+- **Golden Files**: Reference outputs in `testdata/` and `.tapes/golden/`
+- **Validation Helpers**: Automated checks for ANSI colors, UI borders, and completeness
+
+### Golden Files Workflow
+
+Golden files capture expected terminal output including colors and layout:
+
+1. Make code changes
+2. Run tests - they'll fail if output changed
+3. Review the diff carefully
+4. If changes are intentional: `make test-update-golden`
+5. Commit updated golden files with your code
+
+See [.tapes/golden/README.md](.tapes/golden/README.md) for detailed golden file workflow.
+
+### CI/CD
+
+Tests run automatically on every PR:
+- ✅ Unit tests validate calculator logic and UI
+- ✅ VHS integration tests catch demo recording issues
+- ✅ Color validation prevents black screen bugs
+- ✅ Demo artifacts uploaded for manual review
+
 ## Contributing
 
 We follow an **Issue → Branch → Code + Tests → VHS Demo → PR** workflow.
