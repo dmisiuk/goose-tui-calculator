@@ -1,0 +1,6 @@
+# Git attributes for golden test files
+# Treat golden files as binary to preserve exact line endings
+
+testdata/*.golden binary
+internal/*/testdata/*.golden binary
+.tapes/golden/*.txt binary
