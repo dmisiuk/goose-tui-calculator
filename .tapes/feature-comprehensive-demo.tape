@@ -3,7 +3,7 @@ Output .tapes/assets/feature-comprehensive-demo.gif
 Set FontSize 18
 Set Width 1200
 Set Height 800
-Env VHS 1
+Env "VHS" "1"
 
 # Pre-build binary for stability
 Type "go build -o calc ./cmd/calculator"
