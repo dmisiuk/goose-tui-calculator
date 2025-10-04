@@ -2,7 +2,7 @@ Output .tapes/assets/feature-comprehensive-demo.gif
 
 Set FontSize 18
 Set Width 1200
-Set Height 800
+Set Height 1000
 
 Env TERM xterm-256color
 Env COLORTERM truecolor
