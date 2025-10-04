@@ -79,19 +79,50 @@ jobs:
           TERM: xterm-256color
           COLORTERM: truecolor
 
-      - name: Commit generated GIF
+      - name: Upload generated GIF
+        uses: actions/upload-artifact@v4
+        with:
+          name: gif-${{ hashFiles(matrix.tape) }}
+          path: .tapes/assets/*.gif
+          retention-days: 1
+
+  commit-demos:
+    needs: [find-tapes, generate-demos]
+    if: needs.find-tapes.outputs.tapes != '[]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: gif-*
+
+      - name: Copy GIFs to assets directory
+        run: |
+          mkdir -p .tapes/assets
+          find artifacts -name "*.gif" -exec cp {} .tapes/assets/ \;
+
+      - name: Commit all generated GIFs
         uses: stefanzweifel/git-auto-commit-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          commit_message: "Update VHS demo for ${{ matrix.tape }}"
+          commit_message: "Update VHS demos for all changed tapes"
           file_pattern: ".tapes/assets/*.gif"
           commit_user_name: vhs-action 📼
           commit_user_email: actions@github.com
           commit_author: vhs-action 📼 <actions@github.com>
 
   comment-pr:
-    needs: [find-tapes, generate-demos]
+    needs: [find-tapes, commit-demos]
     if: github.event_name == 'pull_request' && needs.find-tapes.outputs.tapes != '[]'
     runs-on: ubuntu-latest
     permissions:

@@ -5,10 +5,19 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/dmisiuk/goose-tui-calculator/internal/calculator"
+	"github.com/muesli/termenv"
 )
 
 func main() {
+	// Force TrueColor output when COLORTERM is set to truecolor
+	// This ensures colors work in VHS recordings and CI environments
+	// where auto-detection may fail
+	if os.Getenv("COLORTERM") == "truecolor" {
+		lipgloss.SetColorProfile(termenv.TrueColor)
+	}
+
 	m := calculator.New()
 	p := tea.NewProgram(m)
 
