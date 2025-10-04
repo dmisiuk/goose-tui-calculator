@@ -35,7 +35,7 @@ Without adequate timing, keystrokes go to the shell instead of the app.
 Output app-demo.gif
 Set FontSize 18
 Set Width 1000
-Set Height 600
+Set Height 700
 
 # Ensure colors work in CI environments
 Env TERM xterm-256color

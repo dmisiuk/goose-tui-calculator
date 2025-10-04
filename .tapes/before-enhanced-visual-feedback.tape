@@ -2,7 +2,7 @@ Output .tapes/assets/before-enhanced-visual-feedback.gif
 
 Set FontSize 18
 Set Width 1000
-Set Height 600
+Set Height 700
 
 Env TERM xterm-256color
 Env COLORTERM truecolor
