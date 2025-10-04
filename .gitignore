@@ -1,17 +1,2 @@
-# Existing (new file created)
-# Allow tracking of demo assets explicitly (override below if any global patterns)
-
-# Go build artifacts
-bin/
-*.exe
-*.log
-*.out
-
-# IDE/editor
-.vscode/
-.idea/
-.DS_Store
-
-# Ignore binary calc and calculator
-./calc
-./calculator
+# Ignore the compiled binary
+calc
