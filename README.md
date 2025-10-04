@@ -4,6 +4,8 @@ A Casio-style terminal user interface calculator built with Go and Bubble Tea, f
 
 *Work in progress.*
 
+![Comprehensive Demo](.tapes/assets/comprehensive-demo.gif)
+
 ![Baseline Demo](.tapes/assets/feature-no-battery.gif)
 
 ## Features
