@@ -8,6 +8,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/dmisiuk/goose-tui-calculator/internal/calculator"
+	"github.com/muesli/termenv"
 )
 
 func main() {
@@ -28,8 +29,8 @@ func configureColorProfile() {
 
 	switch {
 	case strings.Contains(colorterm, "truecolor"), os.Getenv("VHS") != "", termProgram == "vhs":
-		lipgloss.SetColorProfile(lipgloss.TrueColor)
+		lipgloss.SetColorProfile(termenv.TrueColor)
 	case strings.Contains(colorterm, "256"):
-		lipgloss.SetColorProfile(lipgloss.ANSI256)
+		lipgloss.SetColorProfile(termenv.ANSI256)
 	}
 }
