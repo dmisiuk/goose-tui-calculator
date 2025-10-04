@@ -15,3 +15,26 @@ bin/
 # Ignore binary calc and calculator
 calc
 calculator
+
+# Generated VHS demo files (GIFs are large, keep golden txt files)
+.tapes/assets/*.gif
+
+# Test artifacts and temporary files
+test-data/
+*.tmp
+*.temp
+
+# Coverage files
+coverage.out
+coverage.html
+
+# Vendor directory (if used)
+vendor/
+
+# Golden file backups
+*.golden.bak
+*.golden.backup
+
+# VHS temporary files
+.vhs-tmp/
+*.vhs-tmp
