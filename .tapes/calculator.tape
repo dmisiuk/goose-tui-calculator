@@ -3,6 +3,9 @@ Set FontSize 18
 Set Width 1000
 Set Height 600
 
+Env TERM xterm-256color
+Env COLORTERM truecolor
+
 # This tape is an alias of calculator-basic.tape
 # It ensures CI demo step won't fail if .tapes/calculator.tape is expected
 
@@ -14,38 +17,38 @@ Type "./calc"
 Enter
 Sleep 1500ms
 
-Type "{{down}}"
+Down
 Sleep 400ms
-Type "{{down}}"
+Down
 Sleep 400ms
-Type "{{down}}"
+Down
 Sleep 400ms
-Type "{{right}}"
+Right
 Sleep 400ms
-Type " "
+Space
 Sleep 1500ms
 
-Type "{{right}}"
+Right
 Sleep 400ms
-Type "{{right}}"
+Right
 Sleep 400ms
-Type "{{right}}"
+Right
 Sleep 400ms
-Type " "
+Space
 Sleep 1500ms
 
-Type "{{left}}"
+Left
 Sleep 400ms
-Type "{{left}}"
+Left
 Sleep 400ms
-Type " "
+Space
 Sleep 1500ms
 
-Type "{{right}}"
+Right
 Sleep 400ms
-Type "{{right}}"
+Right
 Sleep 400ms
-Type " "
+Space
 Sleep 1500ms
 
 Type "q"
