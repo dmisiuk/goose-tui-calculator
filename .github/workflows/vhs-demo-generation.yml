@@ -1,0 +1,165 @@
+name: Generate VHS Demos
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - .tapes/**
+      - cmd/**
+      - internal/**
+      - go.mod
+      - go.sum
+  workflow_dispatch:
+
+jobs:
+  find-tapes:
+    runs-on: ubuntu-latest
+    outputs:
+      tapes: ${{ steps.find.outputs.tapes }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find changed/new tape files
+        id: find
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # Get changed and new .tape files in PR
+            tapes=$(git diff --name-only --diff-filter=AM origin/${{ github.base_ref }}...HEAD | grep '\.tape$' | grep -v '/assets/' || echo "")
+          else
+            # For workflow_dispatch, get all tape files
+            tapes=$(find .tapes -name "*.tape" -not -path "*/assets/*" -type f)
+          fi
+
+          if [ -z "$tapes" ]; then
+            echo "tapes=[]" >> $GITHUB_OUTPUT
+            echo "No changed/new tape files found"
+          else
+            # Format as JSON array
+            tapes_json=$(echo "$tapes" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+            echo "tapes=$tapes_json" >> $GITHUB_OUTPUT
+            echo "Found tapes: $tapes_json"
+          fi
+
+  generate-demos:
+    needs: find-tapes
+    if: needs.find-tapes.outputs.tapes != '[]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        tape: ${{ fromJson(needs.find-tapes.outputs.tapes) }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.24"
+
+      - name: Build calculator
+        run: go build -o calc ./cmd/calculator
+
+      - name: Install VHS dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y ffmpeg ttyd
+          go install github.com/charmbracelet/vhs@latest
+
+      - name: Generate demo with VHS
+        run: vhs ${{ matrix.tape }}
+        env:
+          TERM: xterm-256color
+          COLORTERM: truecolor
+
+      - name: Commit generated GIF
+        uses: stefanzweifel/git-auto-commit-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          commit_message: "Update VHS demo for ${{ matrix.tape }}"
+          file_pattern: ".tapes/assets/*.gif"
+          commit_user_name: vhs-action 📼
+          commit_user_email: actions@github.com
+          commit_author: vhs-action 📼 <actions@github.com>
+
+  comment-pr:
+    needs: [find-tapes, generate-demos]
+    if: github.event_name == 'pull_request' && needs.find-tapes.outputs.tapes != '[]'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Get commit SHA
+        id: sha
+        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Read tape output paths
+        id: outputs
+        run: |
+          tapes='${{ needs.find-tapes.outputs.tapes }}'
+          outputs="["
+          first=true
+          echo "$tapes" | jq -r '.[]' | while read tape; do
+            if [ -f "$tape" ]; then
+              output=$(grep "^Output" "$tape" | head -1 | awk '{print $2}')
+              if [ ! -z "$output" ]; then
+                if [ "$first" = false ]; then
+                  outputs="${outputs},"
+                fi
+                outputs="${outputs}\"${output}\""
+                first=false
+              fi
+            fi
+          done
+          outputs="${outputs}]"
+          echo "paths=$outputs" >> $GITHUB_OUTPUT
+
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const tapes = ${{ needs.find-tapes.outputs.tapes }};
+            const sha = '${{ steps.sha.outputs.sha }}';
+
+            if (!tapes || tapes.length === 0) {
+              console.log('No tape files found');
+              return;
+            }
+
+            let body = `## 🎬 Generated VHS Demos\n\n`;
+
+            for (const tape of tapes) {
+              const content = fs.readFileSync(tape, 'utf8');
+              const outputMatch = content.match(/^Output\s+(.+)$/m);
+
+              if (outputMatch) {
+                const outputPath = outputMatch[1];
+                const gifName = outputPath.split('/').pop();
+                const url = `https://raw.githubusercontent.com/${{ github.repository }}/${sha}/${outputPath}`;
+                const title = gifName.replace('.gif', '').replace(/-/g, ' ');
+                body += `### ${title}\n\n`;
+                body += `[![${gifName}](${url})](${url})\n\n`;
+              }
+            }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });

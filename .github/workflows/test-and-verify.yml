@@ -20,12 +20,8 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.24'
+          go-version: "1.24"
 
-      - name: Install dependencies (ffmpeg, ttyd)
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg ttyd
-
-      # Build (replaces deprecated 'go get .')
       - name: Build
         run: go build ./...
 
@@ -34,11 +30,3 @@ jobs:
 
       - name: Vet code
         run: go vet ./...
-
-      - name: Install vhs
-        run: go install github.com/charmbracelet/vhs@latest
-
-      - name: Run calculator demo tape
-        run: |
-          export PATH=$(go env GOPATH)/bin:$PATH
-          vhs .tapes/calculator.tape
