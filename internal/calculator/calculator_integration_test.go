@@ -1,8 +1,8 @@
 package calculator_test
 
 import (
-	"testing"
 	"github.com/dmisiuk/goose-tui-calculator/internal/calculator"
+	"testing"
 )
 
 func TestIntegrationExample(t *testing.T) {
