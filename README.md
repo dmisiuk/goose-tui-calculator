@@ -1,5 +1,7 @@
 # Goose TUI Calculator 🪿
 
+![Comprehensive Demo](.tapes/assets/comprehensive-flows.gif)
+
 A Casio-style terminal user interface calculator built with Go and Bubble Tea, featuring the Goose logo and authentic retro LCD design.
 
 *Work in progress.*
