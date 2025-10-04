@@ -1,7 +1,13 @@
 Output .tapes/assets/calculator-basic.gif
+Output .tapes/assets/calculator-basic.txt
+
 Set FontSize 18
-Set Width 1000
-Set Height 600
+Set Width 1200
+Set Height 800
+
+# Force colors for proper rendering
+Env CLICOLOR_FORCE 1
+Env FORCE_COLOR 1
 
 # Pre-build binary for stability (cold compile can be slow on CI)
 Type "go build -o calc ./cmd/calculator"

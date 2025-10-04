@@ -1,0 +1,69 @@
+name: Golden Test Framework
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Run unit tests
+        run: make test-unit
+        env:
+          CLICOLOR_FORCE: 1
+          FORCE_COLOR: 1
+
+  integration-tests:
+    name: VHS Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Install VHS
+        run: |
+          # Install VHS for Ubuntu
+          wget https://github.com/charmbracelet/vhs/releases/download/v0.7.2/vhs_0.7.2_amd64.deb
+          sudo dpkg -i vhs_0.7.2_amd64.deb
+          # Install ffmpeg (required by VHS)
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Run VHS integration tests
+        run: make test-integration
+        env:
+          CLICOLOR_FORCE: 1
+          FORCE_COLOR: 1
+
+      - name: Upload demo artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vhs-demos
+          path: |
+            .tapes/assets/*.gif
+            .tapes/assets/*.txt
+          retention-days: 30

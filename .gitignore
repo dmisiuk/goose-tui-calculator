@@ -15,3 +15,6 @@ bin/
 # Ignore binary calc and calculator
 calc
 calculator
+
+# Golden test framework - ignore generated GIFs
+.tapes/assets/*.gif

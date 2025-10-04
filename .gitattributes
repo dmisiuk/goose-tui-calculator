@@ -1,0 +1,3 @@
+internal/calculator/testdata/*.golden binary
+.tapes/golden/*.txt binary
+.tapes/golden/*.golden binary
