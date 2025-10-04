@@ -1,7 +1,10 @@
 Output .tapes/assets/feature-display-alignment.gif
 Set FontSize 18
 Set Width 1000
-Set Height 600
+Set Height 700
+
+Env TERM xterm-256color
+Env COLORTERM truecolor
 
 # Pre-build binary for stability (cold compile can be slow on CI)
 Type "go build -o calc ./cmd/calculator"
