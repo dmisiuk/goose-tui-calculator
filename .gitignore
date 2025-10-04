@@ -12,6 +12,9 @@ bin/
 .idea/
 .DS_Store
 
-# Ignore binary calc and calculator
-calc
-calculator
+# Ignore binary calc and calculator (but not directories)
+/calc
+/calculator
+
+# Golden test framework - ignore generated GIFs
+.tapes/assets/*.gif
