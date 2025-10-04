@@ -4,6 +4,20 @@ A Casio-style terminal user interface calculator built with Go and Bubble Tea, f
 
 *Work in progress.*
 
+## 🎬 Comprehensive Demo
+
+This demo showcases all calculator interaction flows:
+
+![Comprehensive Flows Demo](.tapes/assets/comprehensive-flows.gif)
+
+**Features demonstrated:**
+- **Number keys usage** - Direct typing with keyboard input
+- **Arrow keys + space** - Navigation and selection with arrow keys
+- **Error handling** - Division by zero and large number operations
+- **Screen cleaning** - AC clears and complex calculations
+
+---
+
 ![Baseline Demo](.tapes/assets/feature-no-battery.gif)
 
 ## Features
