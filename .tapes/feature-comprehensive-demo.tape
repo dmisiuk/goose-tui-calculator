@@ -4,6 +4,9 @@ Set FontSize 18
 Set Width 1200
 Set Height 800
 
+Env TERM xterm-256color
+Env COLORTERM truecolor
+
 # Pre-build binary for stability
 Type "go build -o calc ./cmd/calculator"
 Enter
