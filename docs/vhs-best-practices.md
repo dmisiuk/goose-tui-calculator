@@ -37,6 +37,10 @@ Set FontSize 18
 Set Width 1000
 Set Height 600
 
+# Ensure colors work in CI environments
+Env TERM xterm-256color
+Env COLORTERM truecolor
+
 # Pre-build for stability
 Type "go build -o app ./cmd/app"
 Enter
@@ -107,6 +111,31 @@ Sleep 600ms     # Clean exit
 ### Issue 3: Demo too fast to follow
 **Cause**: Short delays between actions
 **Fix**: Use 300ms+ between keystrokes, 800ms for results
+
+### Issue 4: Colors missing in CI/GitHub Actions
+**Cause**: Terminal color capabilities not detected in CI environments
+**Fix**: Add environment variables to tape file:
+```tape
+Env TERM xterm-256color
+Env COLORTERM truecolor
+```
+
+For applications using Lipgloss/Bubbletea, also force TrueColor in your code:
+```go
+import (
+    "os"
+    "github.com/charmbracelet/lipgloss"
+    "github.com/muesli/termenv"
+)
+
+func main() {
+    // Force TrueColor when COLORTERM is set
+    if os.Getenv("COLORTERM") == "truecolor" {
+        lipgloss.SetColorProfile(termenv.TrueColor)
+    }
+    // ... rest of application
+}
+```
 
 ## Testing
 Always test locally before committing:
