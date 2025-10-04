@@ -5,6 +5,9 @@ Set Height 600
 
 Env TERM xterm-256color
 Env COLORTERM truecolor
+Env FORCE_COLOR "1"
+Env CLICOLOR_FORCE "1"
+Env VHS "1"
 
 # This tape is an alias of calculator-basic.tape
 # It ensures CI demo step won't fail if .tapes/calculator.tape is expected

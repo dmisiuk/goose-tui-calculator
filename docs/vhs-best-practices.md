@@ -58,6 +58,12 @@ Type "q"
 Sleep 600ms  # Clean exit
 ```
 
+## Color Output in CI
+
+- Set `TERM=xterm-256color` and `COLORTERM=truecolor` so tapes render with the full palette.
+- Force colors when needed via `FORCE_COLOR=1` or `CLICOLOR_FORCE=1`. The GitHub Actions workflow (`.github/workflows/vhs-demo-generation.yml`) now exports these variables along with `VHS=1` and `TERM_PROGRAM=vhs` so VHS recordings stay colorful in headless runners.
+- Mirror the same environment locally when previewing tapes to ensure parity with CI output.
+
 ## Development Workflow
 
 ### Creating New Tapes
