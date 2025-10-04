@@ -1,5 +1,4 @@
 Output .tapes/assets/calculator-alias.gif
-Set Theme "Catppuccin Mocha"
 Set FontSize 18
 Set Width 1000
 Set Height 600
