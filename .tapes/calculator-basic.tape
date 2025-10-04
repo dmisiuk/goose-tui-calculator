@@ -1,7 +1,7 @@
 Output .tapes/assets/calculator-basic.gif
 Set FontSize 18
 Set Width 1000
-Set Height 600
+Set Height 800
 
 Env CLICOLOR_FORCE "1"
 
