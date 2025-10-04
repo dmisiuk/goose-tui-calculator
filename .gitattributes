@@ -1,0 +1,20 @@
+# Golden test files - preserve line endings and treat as binary for consistency
+testdata/*.golden binary
+.tapes/golden/*.txt binary
+
+# VHS tape files
+.tapes/*.tape text eol=lf
+
+# Source files
+*.go text eol=lf
+*.md text eol=lf
+
+# Configuration files
+*.yml text eol=lf
+*.yaml text eol=lf
+Makefile text eol=lf
+.gitattributes text eol=lf
+.gitignore text eol=lf
+
+# Shell scripts
+*.sh text eol=lf

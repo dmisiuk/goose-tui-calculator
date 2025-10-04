@@ -6,6 +6,9 @@ require (
 	github.com/charmbracelet/bubbles v0.18.0
 	github.com/charmbracelet/bubbletea v1.3.9
 	github.com/charmbracelet/lipgloss v1.1.0
+	github.com/charmbracelet/x/exp/teatest v0.0.0-20231201120000-abcdef123456
+	github.com/charmbracelet/x/exp/golden v0.0.0-20231201120000-abcdef123456
+	github.com/stretchr/testify v1.9.0
 )
 
 require (
