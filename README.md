@@ -4,14 +4,14 @@ A Casio-style terminal user interface calculator built with Go and Bubble Tea, f
 
 *Work in progress.*
 
-![Baseline Demo](.tapes/assets/feature-no-battery.gif)
+![Comprehensive Flow Demo](.tapes/assets/comprehensive-flow.gif)
 
 ## Features
 
 ### Casio-Style Design with Goose Branding
 Authentic calculator appearance inspired by classic Casio calculators:
 
-![Goose Logo Casio UI Demo](.tapes/assets/feature-no-battery.gif)
+![Goose Logo Casio UI Demo](.tapes/assets/comprehensive-flow.gif)
 
 - **Dual Goose Logo 🪿** - Distinctive dual goose branding (🪿 GOOSE 🪿) at the top
 - **Green LCD Display** - Authentic dark green background with light green text
