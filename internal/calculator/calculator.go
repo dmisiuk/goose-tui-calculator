@@ -9,6 +9,7 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/dmisiuk/goose-tui-calculator/internal/audio"
 )
 
 var (
@@ -256,6 +257,9 @@ func (m model) handleButtonPress(button string) (tea.Model, tea.Cmd) {
 	m.lastButton = button
 	m.isError = false
 
+	// Play audio feedback asynchronously
+	audio.PlayButtonSound(button)
+
 	switch {
 	case isNumber(button):
 		if m.isOperand2 {
@@ -331,7 +335,7 @@ func (m model) handleButtonPress(button string) (tea.Model, tea.Cmd) {
 		}
 	}
 
-	return m, func() tea.Msg { fmt.Print("\a"); return nil }
+	return m, nil
 }
 
 func isNumber(s string) bool { _, err := strconv.Atoi(s); return err == nil }
