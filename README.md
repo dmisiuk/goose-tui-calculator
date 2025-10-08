@@ -72,6 +72,25 @@ An initial requirements and scope document is maintained in [docs/requirements.m
 
 Issue tracking the requirements document: See Issue #4.
 
+## Testing & Golden Files
+
+Automated tests cover both the Bubble Tea model and the VHS recording workflow.
+
+- **Run calculator golden tests**
+  ```bash
+  go test ./internal/calculator -run TestCalculator
+  ```
+- **Regenerate golden snapshots** (after intentional UI changes)
+  ```bash
+  CLICOLOR_FORCE=1 FORCE_COLOR=1 go test ./internal/calculator -run TestCalculator -update
+  ```
+- **Execute the VHS integration test** (skips automatically when VHS is not installed)
+  ```bash
+  go test -run TestVHSBasicDemo ./...
+  ```
+
+Golden snapshots for the calculator live in `internal/calculator/testdata/`. The VHS integration test compares its output to `.tapes/golden/calculator-basic.txt` so remember to regenerate those assets when updating the demo scripts.
+
 ## Contributing
 
 We follow an **Issue → Branch → Code + Tests → VHS Demo → PR** workflow.
