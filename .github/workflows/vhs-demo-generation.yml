@@ -64,6 +64,9 @@ jobs:
         with:
           go-version: "1.24"
 
+      - name: Install ALSA dependencies
+        run: sudo apt-get update && sudo apt-get install -y libasound2-dev
+
       - name: Build calculator
         run: go build -o calc ./cmd/calculator
 

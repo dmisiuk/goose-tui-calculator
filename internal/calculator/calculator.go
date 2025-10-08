@@ -9,6 +9,7 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/dmisiuk/goose-tui-calculator/internal/audio"
 )
 
 var (
@@ -255,6 +256,9 @@ func (m model) Display() string {
 func (m model) handleButtonPress(button string) (tea.Model, tea.Cmd) {
 	m.lastButton = button
 	m.isError = false
+
+	// Play audio feedback asynchronously
+	audio.PlayButtonSound(button)
 
 	switch {
 	case isNumber(button):

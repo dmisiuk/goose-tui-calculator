@@ -61,6 +61,17 @@ Advanced visual feedback system that distinguishes between different input metho
 - **Complete accessibility** - Clear visual distinction between all interaction methods
 - **Multi-input support** - Seamless switching between navigation and direct input
 
+### Audio Feedback
+Authentic tactile experience with auditory feedback on button presses:
+
+- **Number buttons (0-9)** - Mid-range tone (600 Hz) for numeric input
+- **Functional/operator buttons (+, -, x, /, %, +/-, .)** - Higher tone (800 Hz) for operations
+- **Special action buttons (AC, =)** - Distinct lower tone (400 Hz) with longer duration for emphasis
+- **Brief sounds** - 50-80ms duration to avoid disrupting calculator flow
+- **Asynchronous playback** - Audio plays without blocking UI updates
+- **Cross-platform support** - Works on macOS, Linux, and Windows
+- **Graceful degradation** - Calculator functions normally even if audio is unavailable
+
 ## Project Requirements
 
 An initial requirements and scope document is maintained in [docs/requirements.md](docs/requirements.md). This captures:
