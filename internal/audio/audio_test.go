@@ -69,11 +69,3 @@ func TestPlaySpecialActionSound(t *testing.T) {
 	// Should not panic
 	PlaySpecialActionSound()
 }
-
-func TestIsEnabled(t *testing.T) {
-	// IsEnabled should return a boolean
-	enabled := IsEnabled()
-	if enabled != true && enabled != false {
-		t.Errorf("IsEnabled() returned invalid value: %v", enabled)
-	}
-}
