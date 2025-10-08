@@ -335,7 +335,7 @@ func (m model) handleButtonPress(button string) (tea.Model, tea.Cmd) {
 		}
 	}
 
-	return m, nil
+	return m, func() tea.Msg { fmt.Print("\a"); return nil }
 }
 
 func isNumber(s string) bool { _, err := strconv.Atoi(s); return err == nil }

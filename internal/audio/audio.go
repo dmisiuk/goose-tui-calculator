@@ -13,7 +13,7 @@ var (
 	// Speaker initialization
 	speakerInitialized bool
 	speakerMutex       sync.Mutex
-	audioEnabled       bool = true
+	audioEnabled       bool = false
 )
 
 const (
