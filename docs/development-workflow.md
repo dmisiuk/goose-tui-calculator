@@ -151,7 +151,43 @@ Calculator with both enhanced visual feedback AND previous operation display:
 ## Future Enhancements
 - Script: `scripts/update-demos.sh`
 - Lint: ensure PR template filled (GitHub Action)
-- Badge: “Visual demos passing” (custom status)
+- Badge: "Visual demos passing" (custom status)
+
+## Automated VHS Demo Recording
+
+The repository uses [@charmbracelet/vhs-action](https://github.com/charmbracelet/vhs-action) to automatically generate demo recordings for pull requests.
+
+### How It Works
+1. **Trigger**: When you open/update a PR that changes Go code or VHS tapes
+2. **Execution**: GitHub Actions runs all `.tape` files in the `.tapes/` directory
+3. **Storage**: Generated GIFs are uploaded as workflow artifacts (30-day retention)
+4. **Notification**: A bot comment provides download links and a review checklist
+
+### Workflow File Location
+- **Path**: `.github/workflows/vhs-demo.yml`
+- **Runs on**: `pull_request` events for `main` and `develop` branches
+- **Monitors**: Changes to `**.go`, `.tapes/**`, `cmd/**`, `internal/**`
+
+### Using Automated Demos
+**During PR development:**
+1. Create/update VHS tapes in `.tapes/` directory
+2. Push changes - workflow runs automatically
+3. Check the Actions tab for "VHS Demo Recording" workflow status
+4. Download artifacts from the workflow run or PR comment link
+5. Review demos for quality and accuracy
+6. Commit approved demos to `.tapes/assets/` directory
+
+**Demo storage decision:**
+- **Artifacts (automatic)**: All generated demos uploaded as GitHub Actions artifacts
+- **Repository (manual)**: Commit approved demos to `.tapes/assets/*.gif` after review
+- **PR visibility**: Use GitHub raw URLs in PR descriptions for immediate visual feedback
+
+### Best Practices
+- Let automation generate demos first, then manually review
+- Only commit demos to the repository after verification
+- Use artifacts for iteration - commit final versions only
+- Update tapes if demos don't match expectations
+- Leverage the PR comment checklist for quality control
 
 ## Common Issues and Corrective Actions
 

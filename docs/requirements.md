@@ -47,11 +47,16 @@ Owner: @dmisiuk
 - Generated Assets: `/.tapes/assets/*.gif` committed for documentation & README embedding.
 - Contribution Rule: New feature PRs must include updated or new tape + regenerated GIF if UI behavior changes.
 - Regression Guard: CI runs all tapes to ensure they still complete.
+- Automated Generation: `vhs-demo.yml` workflow uses @charmbracelet/vhs-action to auto-generate demos on PRs; artifacts uploaded for review before committing to repo.
 
 ## 7. CI/CD Workflows
 - test-and-verify.yml:
   - Trigger: push + pull_request.
   - Steps: fmt check, vet, unit+integration tests, race detection, run vhs demos, collect coverage, upload to Codecov.
+- vhs-demo.yml:
+  - Trigger: pull_request (on main/develop branches).
+  - Steps: Build calculator, run VHS action to generate demos from all `.tape` files, upload GIFs as artifacts (30-day retention), post PR comment with download links.
+  - Purpose: Automate demo generation for PR review; contributors download approved demos and commit to `.tapes/assets/`.
 - release.yml:
   - Trigger: git tag push matching `v*`.
   - Steps: cross-compile (Linux, macOS, Windows; add arm64 where available), attach binaries to GitHub Release, generate checksums.
